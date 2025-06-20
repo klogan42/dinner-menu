@@ -1,0 +1,315 @@
+[
+    {
+      "name": "Chicken Alfredo",
+      "ingredients": [
+        "chicken breast",
+        "alfredo sauce",
+        "fettuccine",
+        "parmesan cheese"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Grilled Cheese",
+      "ingredients": [
+        "bread",
+        "cheddar cheese",
+        "butter"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "BLT",
+      "ingredients": [
+        "bacon",
+        "lettuce",
+        "tomato",
+        "bread",
+        "mayonnaise"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Omelettes",
+      "ingredients": [
+        "eggs",
+        "cheddar cheese",
+        "milk",
+        "bell pepper"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "French Toast",
+      "ingredients": [
+        "bread",
+        "eggs",
+        "milk",
+        "cinnamon",
+        "syrup",
+        "vanilla extract"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Pancakes",
+      "ingredients": [
+        "pancake mix",
+        "eggs",
+        "milk",
+        "syrup"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Homemade Pizza",
+      "ingredients": [
+        "pizza crust",
+        "mozzarella",
+        "pizza sauce",
+        "pepperoni"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Frozen Pizza",
+      "ingredients": [
+        "frozen pizza"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Grilled Chicken Caesar Salad",
+      "ingredients": [
+        "chicken breast",
+        "romaine lettuce",
+        "croutons",
+        "parmesan cheese",
+        "caesar dressing"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Cheeseburgers",
+      "ingredients": [
+        "ground beef",
+        "burger buns",
+        "cheddar cheese"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Turkey Burgers",
+      "ingredients": [
+        "ground turkey",
+        "burger buns",
+        "lettuce",
+        "tomato"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Barbecue Chicken with Cheese",
+      "ingredients": [
+        "chicken breast",
+        "bbq sauce",
+        "cheddar cheese"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Bone-In Barbecue Chicken",
+      "ingredients": [
+        "bone-in chicken",
+        "bbq sauce"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Steak",
+      "ingredients": [
+        "steak",
+        "salt",
+        "pepper"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Harbor View Chicken",
+      "ingredients": [
+        "chicken breast",
+        "pasta",
+        "parmesan cheese",
+        "seasoning"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Chicken Teriyaki",
+      "ingredients": [
+        "chicken breast",
+        "teriyaki sauce",
+        "rice",
+        "broccoli"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Chicken Tikka Masala with Naan",
+      "ingredients": [
+        "chicken breast",
+        "tikka masala sauce",
+        "naan",
+        "rice"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "Flatbread Pizza",
+      "ingredients": [
+        "flatbread",
+        "pizza sauce",
+        "mozzarella"
+      ],
+      "last_ate_date": null
+    }, 
+    {
+      "name": "spaghetti and meatballs",
+      "ingredients": [
+        "noodles",
+        "sauce",
+        "meatballs"
+      ],
+      "last_ate_date": null
+    },
+    {
+        "name":"fruit",
+        "ingredients" :[
+            "apple",
+            "banana",
+            "orange",
+            "pineapple",
+            "raspberries",
+            "pear",
+            "apple",
+            "strawberries",
+            "blueberries",
+            "blackberries",
+            "grapes",
+            "kiwi",
+            "watermelon",
+            "cantaloupe",
+            "peach",
+            "plum",
+            "apricot",
+            "prune"
+        ],
+        "last_ate_date": null
+    },
+    {
+      "name":"PROTEIN SNACKS",
+      "ingredients": [
+        "protein bar",
+        "protein shake",
+        "beef jerky",
+        "nuts",
+        "almonds",
+        "pea chips",
+        "hard boiled eggs",
+        "yogurt"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name":"lunch meat sandwiches",
+      "ingredients": [
+        "lunch meat",
+        "bread",
+        "cheese",
+        "lettuce",
+        "tomato",
+        "mayonnaise",
+        "mustard"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "nut butter sandwiches",
+      "ingredients": [
+        "peanut butter",
+        "almond butter",
+        "bread",
+        "banana",
+        "honey"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "drinks",
+      "ingredients": [
+        "water",
+        "coffee",
+        "tea",
+        "juice",
+        "soda",
+        "milk",
+        "lemonade",
+        "beer",
+        "espresso beans",
+        "white chocoalte latte",
+        "matcha latte",
+        "green tea"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name": "tacos",
+      "ingredients":[
+        "ground beef",
+        "taco seasoning",
+        "taco shells",
+        "lettuce",
+        "tomato",
+        "cheese",
+        "sour cream",
+        "salsa",
+        "tortillas",
+        "tortilla chips",
+        "guacamole",
+        "refried beans",
+        "black beans",
+        "pico de gallo",
+        "jalapeños",
+        "avocado",
+        "cilantro",
+        "lime",
+        "corn",
+        "bell pepper",
+        "onion",
+        "salsa verde",
+        "hot sauce",
+        "chili powder",
+        "cumin",
+        "paprika",
+        "oregano",
+        "garlic powder",
+        "onion powder",
+        "salt",
+        "pepper",
+        "taco sauce"
+      ],
+      "last_ate_date": null
+    },
+    {
+      "name":"easy lunches",
+      "ingredients":[
+        "popcorn chicken",
+        "chicken nuggets",
+        "frozen burritos",
+        "frozen taquitos",
+        "fried mozzarella sticks"
+      ],
+      "last_ate_date": null
+    }
+
+  ]
