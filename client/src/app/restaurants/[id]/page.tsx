@@ -3,11 +3,16 @@
 import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Star, Pencil, Trash2, ArrowLeft, MapPin } from "lucide-react";
+import { Star, Pencil, Trash2, ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRestaurant, useDeleteRestaurant, useToggleRestaurantFavorite } from "@/lib/hooks";
+import { useRestaurant, useDeleteRestaurant, useToggleRestaurantFavorite, useRestaurantVisits } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
+
+function formatVisitDate(dateStr: string) {
+  const date = new Date(dateStr + "T00:00");
+  return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+}
 
 export default function RestaurantDetailPage({
   params,
@@ -19,6 +24,8 @@ export default function RestaurantDetailPage({
   const { data: restaurant, isLoading } = useRestaurant(id);
   const deleteRestaurant = useDeleteRestaurant();
   const toggleFav = useToggleRestaurantFavorite();
+  const { data: allVisits = {} } = useRestaurantVisits();
+  const visits = allVisits[id] ?? [];
 
   if (isLoading) return <div className={theme.empty}>Loading restaurant...</div>;
   if (!restaurant) return <div className={theme.empty}>Restaurant not found.</div>;
@@ -65,6 +72,19 @@ export default function RestaurantDetailPage({
         </div>
       )}
 
+      {/* Visit stats */}
+      <div className="flex items-center gap-3 text-base text-amber-800/70 mb-4">
+        <span className="flex items-center gap-1 font-display">
+          <CalendarDays className="size-4" />
+          {visits.length} {visits.length === 1 ? "visit" : "visits"}
+        </span>
+        {visits.length > 0 && (
+          <span className="font-display text-amber-700">
+            Last: {formatVisitDate(visits[0])}
+          </span>
+        )}
+      </div>
+
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mb-6">
         <Link href={`/restaurants/${restaurant.id}/edit`}>
@@ -77,17 +97,38 @@ export default function RestaurantDetailPage({
         </Button>
       </div>
 
-      {/* Notes */}
-      {restaurant.notes && (
-        <Card className={theme.card}>
-          <CardHeader className="pb-2">
-            <CardTitle className={`${theme.cardTitle} text-base`}>Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-base text-amber-900 whitespace-pre-wrap">{restaurant.notes}</p>
-          </CardContent>
-        </Card>
-      )}
+      <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+        {/* Notes */}
+        {restaurant.notes && (
+          <Card className={theme.card}>
+            <CardHeader className="pb-2">
+              <CardTitle className={`${theme.cardTitle} text-base`}>Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-base text-amber-900 whitespace-pre-wrap">{restaurant.notes}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Visit history */}
+        {visits.length > 0 && (
+          <Card className={theme.card}>
+            <CardHeader className="pb-2">
+              <CardTitle className={`${theme.cardTitle} text-base`}>Visit History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {visits.map((date) => (
+                  <li key={date} className="flex items-center gap-2 text-sm text-amber-900">
+                    <CalendarDays className="size-3.5 text-amber-500 shrink-0" />
+                    <span className="font-display">{formatVisitDate(date)}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

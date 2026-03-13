@@ -70,4 +70,7 @@ export const api = {
 
   toggleRestaurantFavorite: (id: string) =>
     fetchJson<Restaurant>(`/api/restaurants/${id}/favorite`, { method: "PATCH" }),
+
+  getRestaurantVisits: () =>
+    fetchJson<Record<string, string[]>>("/api/restaurants/visits"),
 };

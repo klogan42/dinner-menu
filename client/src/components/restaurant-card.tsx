@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Restaurant } from "@/lib/types";
@@ -21,8 +21,20 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+function formatVisitDate(dateStr: string) {
+  const date = new Date(dateStr + "T00:00");
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+interface RestaurantCardProps {
+  restaurant: Restaurant;
+  visits?: string[];
+}
+
+export function RestaurantCard({ restaurant, visits }: RestaurantCardProps) {
   const toggleFav = useToggleRestaurantFavorite();
+  const lastVisit = visits?.[0];
+  const visitCount = visits?.length ?? 0;
 
   return (
     <Card className={`${theme.card} hover:shadow-md transition-shadow`}>
@@ -52,6 +64,21 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
         {restaurant.rating > 0 && (
           <div className="mb-2">
             <StarRating rating={restaurant.rating} />
+          </div>
+        )}
+
+        {lastVisit ? (
+          <div className="flex items-center gap-1 text-xs text-amber-600 mb-2">
+            <CalendarDays className="size-3.5" />
+            <span className="font-display">
+              Last visited {formatVisitDate(lastVisit)}
+              {visitCount > 1 && <span className="text-amber-500/60"> · {visitCount} visits</span>}
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 text-xs text-amber-400 mb-2">
+            <CalendarDays className="size-3.5" />
+            <span className="font-display">No visits yet</span>
           </div>
         )}
 

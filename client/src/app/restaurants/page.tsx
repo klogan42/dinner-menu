@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { RestaurantCard } from "@/components/restaurant-card";
-import { useRestaurants } from "@/lib/hooks";
+import { useRestaurants, useRestaurantVisits } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
 
 export default function RestaurantsPage() {
   const { data: restaurants, isLoading } = useRestaurants();
+  const { data: visits = {} } = useRestaurantVisits();
   const [search, setSearch] = useState("");
 
   const filtered = restaurants?.filter((r) =>
@@ -37,7 +38,11 @@ export default function RestaurantsPage() {
       {filtered && filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {filtered.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              visits={visits[restaurant.id]}
+            />
           ))}
         </div>
       ) : (

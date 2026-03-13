@@ -115,6 +115,10 @@ export function useDeleteRestaurant() {
   });
 }
 
+export function useRestaurantVisits() {
+  return useQuery({ queryKey: ["restaurant-visits"], queryFn: api.getRestaurantVisits });
+}
+
 export function useToggleRestaurantFavorite() {
   const qc = useQueryClient();
   return useMutation({
