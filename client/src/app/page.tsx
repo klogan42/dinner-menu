@@ -171,6 +171,8 @@ export default function PlannerPage() {
           <div className="grid gap-2">
         {getOrderedDays().map(({ day, date, dateKey, isToday }) => {
           const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
+          const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+          const restaurant = getRestaurant(history[dateKey]?.restaurantId);
           return (
             <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400/50 bg-amber-100/50" : ""}`} size="sm">
               <CardContent className="p-3 sm:p-3">
@@ -181,14 +183,37 @@ export default function PlannerPage() {
                         {isToday ? "Today" : SHORT_DAYS[day]}
                         <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
                       </span>
-                      <span className="text-xs text-amber-600/40 flex items-center gap-1 shrink-0">
-                        <Clock className="size-3.5" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
-                      </span>
+                      {!isEatOut && (
+                        <span className="text-xs text-amber-600/40 flex items-center gap-1 shrink-0">
+                          <Clock className="size-3.5" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
-                      <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-display text-base truncate">
-                        {recipe.title}
-                      </Link>
+                      {isEatOut ? (
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <Store className="size-4 text-amber-600 shrink-0" />
+                          {restaurant ? (
+                            <button
+                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                              className="text-amber-800 hover:text-amber-600 font-display text-base font-bold truncate transition-colors"
+                            >
+                              {restaurant.name}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                              className="text-amber-400 hover:text-amber-600 font-display text-sm transition-colors"
+                            >
+                              Pick a spot...
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-display text-base truncate">
+                          {recipe.title}
+                        </Link>
+                      )}
                       <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Switch recipe">
                         <RefreshCw className="size-4" />
                       </button>
@@ -196,30 +221,6 @@ export default function PlannerPage() {
                         <Dices className="size-4" />
                       </button>
                     </div>
-                    {(() => {
-                      const rest = getRestaurant(history[dateKey]?.restaurantId);
-                      return rest ? (
-                        <button
-                          onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
-                          className="flex items-center gap-1.5 mt-1 text-left"
-                        >
-                          <Store className="size-3.5 text-amber-600" />
-                          <span className="text-sm font-display text-amber-800 font-bold transition-colors">
-                            {rest.name}
-                          </span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
-                          className="flex items-center gap-1.5 mt-1 text-left"
-                        >
-                          <Store className="size-3.5 text-amber-400" />
-                          <span className="text-xs font-display text-amber-400 hover:text-amber-600 transition-colors">
-                            Ate out? Pick spot...
-                          </span>
-                        </button>
-                      );
-                    })()}
                     {restaurantPickerDay === dateKey && (
                       <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
                         <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
