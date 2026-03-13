@@ -4,29 +4,23 @@ A weekly meal planning app for browsing recipes, planning dinners for the week, 
 
 ## Tech Stack
 
-- **Client:** Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query
-- **Server:** .NET 10, C#, Entity Framework Core, SQLite
+- **Framework:** Next.js 16, React 19, TypeScript
+- **Database:** MongoDB (Mongoose)
+- **Styling:** Tailwind CSS, shadcn/ui
+- **Data Fetching:** TanStack Query
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18+)
-- [.NET 10 SDK](https://dotnet.microsoft.com/)
+- A MongoDB database (e.g. [MongoDB Atlas](https://www.mongodb.com/atlas))
 
-### Run the server
-
-```bash
-cd server
-dotnet run
-```
-
-Runs on `http://localhost:5001`.
-
-### Run the client
+### Setup
 
 ```bash
 cd client
+cp .env.example .env.local   # then fill in your MONGODB_URI and API_SECRET_KEY
 npm install
 npm run dev
 ```
@@ -54,8 +48,5 @@ Runs on `http://localhost:3000`.
 | DELETE | `/api/recipes/{id}` | Delete a recipe |
 | PATCH | `/api/recipes/{id}/favorite` | Toggle favorite |
 | GET | `/api/recipes/random` | Get 7 random recipes |
-| GET | `/api/weekplan` | Get the week plan |
-| PUT | `/api/weekplan` | Update the week plan |
-| DELETE | `/api/weekplan` | Clear the week plan |
 | GET | `/api/mealhistory` | Get meal history |
-| PUT | `/api/mealhistory` | Save meal history |
+| PUT | `/api/mealhistory/{date}` | Set/clear meal for a date |

@@ -6,15 +6,6 @@
 .env.local
 .env*.local
 
-# .NET build artifacts
-server/bin/
-server/obj/
-
-# SQLite databases
-*.db
-*.db-shm
-*.db-wal
-
 # Node
 node_modules/
 
