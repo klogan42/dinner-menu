@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(kill %1:*)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest:*)",
+      "Bash(npm run:*)",
+      "Bash(lsof:*)",
+      "Bash(rm:*)",
+      "Bash(openssl rand:*)",
+      "Bash(npx tsc:*)",
+      "Bash(nslookup:*)",
+      "Bash(dig SRV:*)",
+      "Bash(dig TXT:*)",
+      "Bash(grep:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(GIT_EDITOR=true git rebase --continue)"
+    ]
+  }
+}
