@@ -163,7 +163,7 @@ export function MealCalendar() {
         <button
           key={r.id}
           onClick={() => assignMeal(r.id)}
-          className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
+          className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
         >
           {r.title}
           <span className="text-xs text-amber-600/60 ml-2">
@@ -254,7 +254,7 @@ export function MealCalendar() {
                     {/* Recipe name */}
                     <div className="flex-1 min-w-0">
                       {recipeName ? (
-                        <span className={`text-sm font-medium ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                        <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                           {recipeName}
                         </span>
                       ) : (
@@ -327,7 +327,7 @@ export function MealCalendar() {
                       )}
                     </div>
                     {recipeName && (
-                      <div className={`mt-1 text-sm leading-snug line-clamp-2 font-medium ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                      <div className={`mt-1 text-sm leading-snug line-clamp-2 font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                         {recipeName}
                       </div>
                     )}
@@ -375,7 +375,7 @@ export function MealCalendar() {
                     {date.getDate()}
                   </span>
                   {recipeName && (
-                    <div className={`mt-0.5 text-[10px] sm:text-xs leading-snug line-clamp-2 font-medium ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                    <div className={`mt-0.5 text-[10px] sm:text-xs leading-snug line-clamp-2 font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                       {recipeName}
                     </div>
                   )}

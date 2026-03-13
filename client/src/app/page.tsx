@@ -166,7 +166,7 @@ export default function PlannerPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
-                      <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-medium text-sm truncate">
+                      <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-display text-base truncate">
                         {recipe.title}
                       </Link>
                       <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Switch recipe">
@@ -191,7 +191,7 @@ export default function PlannerPage() {
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
+                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
                           >
                             {r.title}
                             <span className="text-xs text-amber-600/60 ml-2">
@@ -241,7 +241,7 @@ export default function PlannerPage() {
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
+                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
                           >
                             {r.title}
                             <span className="text-xs text-amber-600/60 ml-2">
