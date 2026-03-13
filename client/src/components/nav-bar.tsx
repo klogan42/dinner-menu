@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import { UtensilsCrossed, CalendarDays, Plus, LogOut } from "lucide-react";
+import { UtensilsCrossed, CalendarDays, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -14,7 +13,6 @@ const links = [
 
 export function NavBar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
 
   return (
     <header className="border-b border-amber-200 bg-amber-50 w-full overflow-hidden">
@@ -50,15 +48,6 @@ export function NavBar() {
               </Link>
             );
           })}
-          {session && (
-            <button
-              onClick={() => signOut()}
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors min-h-[44px]"
-            >
-              <LogOut className="size-5" />
-              <span className="hidden sm:inline">Sign out</span>
-            </button>
-          )}
         </nav>
       </div>
     </header>
