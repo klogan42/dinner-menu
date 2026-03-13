@@ -67,7 +67,10 @@ export function useSetMealHistory() {
   return useMutation({
     mutationFn: ({ date, recipeId, restaurantId }: { date: string; recipeId: string | null; restaurantId?: string | null }) =>
       api.setMealHistory(date, recipeId, restaurantId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["mealhistory"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mealhistory"] });
+      qc.invalidateQueries({ queryKey: ["restaurant-visits"] });
+    },
   });
 }
 

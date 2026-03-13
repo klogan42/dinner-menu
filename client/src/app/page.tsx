@@ -65,13 +65,11 @@ export default function PlannerPage() {
   const getRestaurant = (id: string | null | undefined) =>
     id ? restaurants?.find((r) => r.id === id) : undefined;
 
-  const isEatOutRecipe = (recipe: { tags: string[]; title: string }) =>
-    recipe.tags.includes("eat out") || recipe.title.toLowerCase().includes("eat out");
-
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
-    if (entry?.recipeId) {
-      setMealHistory.mutate({ date: dateKey, recipeId: entry.recipeId, restaurantId });
+    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.tags.includes("eat out") || r.title.toLowerCase().includes("eat out"))?.id;
+    if (recipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId, restaurantId });
     }
     setRestaurantPickerDay(null);
     setRestaurantSearch("");
@@ -198,16 +196,26 @@ export default function PlannerPage() {
                         <Dices className="size-4" />
                       </button>
                     </div>
-                    {isEatOutRecipe(recipe) && (() => {
+                    {(() => {
                       const rest = getRestaurant(history[dateKey]?.restaurantId);
-                      return (
+                      return rest ? (
                         <button
                           onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
                           className="flex items-center gap-1.5 mt-1 text-left"
                         >
-                          <Store className={`size-3.5 ${rest ? "text-amber-600" : "text-amber-400"}`} />
-                          <span className={`text-sm font-display transition-colors ${rest ? "text-amber-800 font-bold" : "text-amber-400 hover:text-amber-600"}`}>
-                            {rest?.name ?? "Pick restaurant..."}
+                          <Store className="size-3.5 text-amber-600" />
+                          <span className="text-sm font-display text-amber-800 font-bold transition-colors">
+                            {rest.name}
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                          className="flex items-center gap-1.5 mt-1 text-left"
+                        >
+                          <Store className="size-3.5 text-amber-400" />
+                          <span className="text-xs font-display text-amber-400 hover:text-amber-600 transition-colors">
+                            Ate out? Pick spot...
                           </span>
                         </button>
                       );

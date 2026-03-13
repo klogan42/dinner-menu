@@ -127,24 +127,20 @@ export function MealCalendar() {
     if (!selectedDate) return;
     const recipe = recipes?.find((r) => r.id === recipeId);
     const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+    setMealHistory.mutate({ date: selectedDate, recipeId });
     if (isEatOut && restaurants?.length) {
-      // Assign the eat out recipe, then prompt for restaurant
-      setMealHistory.mutate({ date: selectedDate, recipeId });
       setRestaurantPickerDate(selectedDate);
       setRestaurantSearch("");
-      setSelectedDate(null);
-      setSearch("");
-    } else {
-      setMealHistory.mutate({ date: selectedDate, recipeId });
-      setSelectedDate(null);
-      setSearch("");
     }
+    setSelectedDate(null);
+    setSearch("");
   };
 
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
-    if (entry?.recipeId) {
-      setMealHistory.mutate({ date: dateKey, recipeId: entry.recipeId, restaurantId });
+    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.tags.includes("eat out") || r.title.toLowerCase().includes("eat out"))?.id;
+    if (recipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId, restaurantId });
     }
     setRestaurantPickerDate(null);
     setRestaurantSearch("");
@@ -337,17 +333,29 @@ export function MealCalendar() {
                           <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                             {recipeName}
                           </span>
-                          {isEatOut && (
+                          {restaurantName && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
                               className="flex items-center gap-1.5 mt-1 text-left"
                             >
-                              <Store className={`size-3.5 ${restaurantName ? "text-amber-600" : "text-amber-400"}`} />
-                              <span className={`text-sm font-display transition-colors ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400 hover:text-amber-600"}`}>
-                                {restaurantName ?? "Pick restaurant..."}
+                              <Store className="size-3.5 text-amber-600" />
+                              <span className="text-sm font-display text-amber-800 font-bold transition-colors">
+                                {restaurantName}
                               </span>
                             </button>
                           )}
+                        </div>
+                      ) : restaurantName ? (
+                        <div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
+                            className="flex items-center gap-1.5 text-left"
+                          >
+                            <Store className="size-3.5 text-amber-600" />
+                            <span className="text-sm font-display text-amber-800 font-bold">
+                              {restaurantName}
+                            </span>
+                          </button>
                         </div>
                       ) : (
                         <span className="text-sm font-display text-amber-400">
@@ -428,11 +436,11 @@ export function MealCalendar() {
                         {recipeName}
                       </div>
                     )}
-                    {isEatOut && (
+                    {restaurantName && (
                       <div className="flex items-center gap-1 mt-0.5">
-                        <Store className={`size-3 ${restaurantName ? "text-amber-600" : "text-amber-400"}`} />
-                        <span className={`text-xs line-clamp-1 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
-                          {restaurantName ?? "Pick..."}
+                        <Store className="size-3 text-amber-600" />
+                        <span className="text-xs line-clamp-1 font-display text-amber-800 font-bold">
+                          {restaurantName}
                         </span>
                       </div>
                     )}
@@ -488,9 +496,9 @@ export function MealCalendar() {
                       {recipeName}
                     </div>
                   )}
-                  {isEatOut && (
-                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
-                      {restaurantName ?? "Pick..."}
+                  {restaurantName && (
+                    <div className="text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display text-amber-800 font-bold">
+                      {restaurantName}
                     </div>
                   )}
                 </div>
