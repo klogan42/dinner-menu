@@ -77,7 +77,7 @@ export default function RecipeDetailPage({
           <h1 className="text-xl sm:text-2xl font-bold text-amber-900 break-words min-w-0">
             {recipe.title}
           </h1>
-          <button onClick={() => toggleFav.mutate(recipe.id)} className="text-amber-400 hover:text-amber-500 shrink-0 mt-1">
+          <button onClick={() => toggleFav.mutate(recipe.id)} className="text-amber-400 hover:text-amber-500 shrink-0 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <Star className="size-5 sm:size-6" fill={recipe.isFavorite ? "currentColor" : "none"} />
           </button>
         </div>

@@ -71,11 +71,11 @@ export function MealCalendar() {
     <div className="w-full">
       {/* Month nav */}
       <div className="flex items-center justify-between mb-3">
-        <button onClick={prev} className="p-1 text-stone-400 hover:text-amber-700">
+        <button onClick={prev} className="p-2 text-stone-400 hover:text-amber-700 min-h-[44px] min-w-[44px] flex items-center justify-center">
           <ChevronLeft className="size-5" />
         </button>
         <h2 className="text-sm font-semibold text-amber-900">{monthLabel}</h2>
-        <button onClick={next} className="p-1 text-stone-400 hover:text-amber-700">
+        <button onClick={next} className="p-2 text-stone-400 hover:text-amber-700 min-h-[44px] min-w-[44px] flex items-center justify-center">
           <ChevronRight className="size-5" />
         </button>
       </div>
@@ -121,14 +121,14 @@ export function MealCalendar() {
                 {recipeName && (
                   <button
                     onClick={(e) => { e.stopPropagation(); clearMeal(key); }}
-                    className="text-stone-300 hover:text-red-400 p-0.5 -mr-0.5 -mt-0.5"
+                    className="text-stone-300 hover:text-red-400 p-1.5 -mr-1 -mt-1"
                   >
-                    <X className="size-2.5" />
+                    <X className="size-3.5" />
                   </button>
                 )}
               </div>
               {recipeName && (
-                <div className={`mt-0.5 text-[10px] sm:text-xs leading-tight line-clamp-2 ${isFuture ? "text-stone-400 italic" : "text-stone-600"}`}>
+                <div className={`mt-0.5 text-xs leading-tight line-clamp-2 ${isFuture ? "text-stone-400 italic" : "text-stone-600"}`}>
                   {recipeName}
                 </div>
               )}
@@ -154,7 +154,7 @@ export function MealCalendar() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search recipes..."
-              className="w-full text-sm px-2 py-1.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
+              className="w-full text-sm px-3 py-2.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
               autoFocus
             />
           </div>
@@ -162,7 +162,7 @@ export function MealCalendar() {
             <button
               key={r.id}
               onClick={() => assignMeal(r.id)}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200"
+              className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200 min-h-[44px]"
             >
               {r.title}
               <span className="text-xs text-stone-400 ml-2">

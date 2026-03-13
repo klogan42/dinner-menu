@@ -1,4 +1,4 @@
-# Dinner Menu
+# Dinner Table
 
 A weekly meal planning app for browsing recipes, planning dinners for the week, and generating shopping lists.
 

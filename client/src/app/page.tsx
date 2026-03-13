@@ -161,19 +161,19 @@ export default function PlannerPage() {
                         {isToday ? "Today" : SHORT_DAYS[day]}
                         <span className="font-normal text-stone-400 ml-1">{formatDate(date)}</span>
                       </span>
-                      <span className="text-[10px] text-stone-400 flex items-center gap-0.5 shrink-0">
-                        <Clock className="size-2.5" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
+                      <span className="text-xs text-stone-400 flex items-center gap-0.5 shrink-0">
+                        <Clock className="size-3" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
                       </span>
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
                       <Link href={`/recipes/${recipe.id}`} className="text-stone-700 hover:text-amber-700 font-medium text-xs truncate">
                         {recipe.title}
                       </Link>
-                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-stone-400 hover:text-amber-600 p-0.5 shrink-0" title="Switch recipe">
-                        <RefreshCw className="size-3" />
+                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Switch recipe">
+                        <RefreshCw className="size-4" />
                       </button>
-                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-0.5 shrink-0" title="Random recipe">
-                        <Dices className="size-3" />
+                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Random recipe">
+                        <Dices className="size-4" />
                       </button>
                     </div>
                     {openDay === dateKey && (
@@ -184,7 +184,7 @@ export default function PlannerPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search..."
-                            className="w-full text-sm px-2 py-1.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                            className="w-full text-sm px-3 py-2.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
                             autoFocus
                           />
                         </div>
@@ -192,7 +192,7 @@ export default function PlannerPage() {
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200"
+                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200 min-h-[44px]"
                           >
                             {r.title}
                             <span className="text-xs text-stone-400 ml-2">
@@ -222,8 +222,8 @@ export default function PlannerPage() {
                         Choose a recipe...
                         <ChevronDown className="size-3" />
                       </button>
-                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-1 shrink-0" title="Random recipe">
-                        <Dices className="size-3.5" />
+                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Random recipe">
+                        <Dices className="size-4" />
                       </button>
                     </div>
 
@@ -235,7 +235,7 @@ export default function PlannerPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search..."
-                            className="w-full text-sm px-2 py-1.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                            className="w-full text-sm px-3 py-2.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
                             autoFocus
                           />
                         </div>
@@ -243,7 +243,7 @@ export default function PlannerPage() {
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200"
+                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200 min-h-[44px]"
                           >
                             {r.title}
                             <span className="text-xs text-stone-400 ml-2">

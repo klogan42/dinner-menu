@@ -114,7 +114,7 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
               className={theme.input}
             />
           </div>
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <Label htmlFor="prepTime">Prep (min)</Label>
               <Input id="prepTime" type="number" min={0} value={prepTime} onChange={(e) => setPrepTime(Number(e.target.value))} className={theme.input} />

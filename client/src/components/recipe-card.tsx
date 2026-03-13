@@ -23,7 +23,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           </Link>
           <button
             onClick={() => toggleFav.mutate(recipe.id)}
-            className="text-amber-400 hover:text-amber-500 transition-colors shrink-0"
+            className="text-amber-400 hover:text-amber-500 transition-colors shrink-0 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <Star className="size-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
           </button>

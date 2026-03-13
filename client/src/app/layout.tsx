@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Our Table - Family Dinner Planner",
+  title: "Dinner Table - Family Dinner Planner",
   description: "Plan your family dinners for the week",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="Our Table" />
+        <meta name="apple-mobile-web-app-title" content="Dinner Table" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
