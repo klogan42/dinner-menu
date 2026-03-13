@@ -1,32 +1,31 @@
-// Shared styling constants for a consistent warm kitchen look.
-// Use these instead of sprinkling one-off color classes everywhere.
+// Shared styling constants — warm amber kitchen feel.
 
 export const theme = {
   // Page headings
-  heading: "text-2xl font-bold text-amber-900",
+  heading: "text-2xl font-display text-amber-900 tracking-tight",
 
-  // Cards
-  card: "border-amber-200 bg-amber-50/50",
+  // Cards — warm with amber border
+  card: "border border-amber-300 bg-amber-50/30 rounded-2xl",
 
   // Card section titles
-  cardTitle: "text-amber-900",
+  cardTitle: "text-amber-900 font-display",
 
   // Inputs and textareas
-  input: "border-amber-200 focus-visible:ring-amber-400",
+  input: "border-amber-200 bg-white focus-visible:ring-amber-400/50 focus-visible:border-amber-400 rounded-xl",
 
   // Primary button (filled)
-  buttonPrimary: "bg-amber-600 hover:bg-amber-700 text-white",
+  buttonPrimary: "bg-amber-500 hover:bg-amber-600 text-white shadow-sm rounded-xl",
 
   // Secondary button (outline)
-  buttonOutline: "border-amber-300 text-amber-700",
+  buttonOutline: "border-amber-200 text-amber-800 hover:bg-amber-50 hover:text-amber-900 rounded-xl",
 
   // Tag badges
-  tag: "bg-amber-100 text-amber-800 text-xs",
-  tagActive: "bg-amber-600 text-white",
+  tag: "bg-amber-100 text-amber-800 text-xs rounded-full",
+  tagActive: "bg-amber-500 text-white rounded-full",
 
   // Muted helper text
-  muted: "text-stone-500",
+  muted: "text-amber-700/60",
 
   // Empty/loading states
-  empty: "text-center py-12 text-stone-400",
+  empty: "text-center py-12 text-amber-700/50",
 } as const;

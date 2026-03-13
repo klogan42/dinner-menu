@@ -15,17 +15,17 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-amber-200 bg-amber-50 w-full overflow-hidden">
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 flex items-center justify-between h-14">
+    <header className="bg-amber-50/80 backdrop-blur-md border-b border-amber-200/50 fixed top-0 z-50 w-full">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-amber-900 text-lg"
+          className="flex items-center gap-2 font-display text-amber-900 text-lg tracking-tight"
         >
-          <UtensilsCrossed className="size-5" />
+          <UtensilsCrossed className="size-5 text-amber-600" />
           Dinner Table
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-0.5">
           {links.map(({ href, label, icon: Icon }) => {
             const active =
               href === "/"
@@ -37,10 +37,10 @@ export function NavBar() {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]",
+                  "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all min-h-[44px]",
                   active
-                    ? "bg-amber-200 text-amber-900"
-                    : "text-amber-700 hover:bg-amber-100"
+                    ? "bg-amber-100/70 text-amber-700"
+                    : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
                 )}
               >
                 <Icon className="size-5" />

@@ -122,7 +122,7 @@ export default function PlannerPage() {
 
   return (
     <div className="w-full min-w-0">
-      <h1 className={`${theme.heading} mb-4`}>This Week&apos;s Dinners</h1>
+      <h1 className={`${theme.heading} mb-4`}>What&apos;s for Dinner?</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Calendar — left side on desktop, top on mobile */}
@@ -137,71 +137,70 @@ export default function PlannerPage() {
         {/* Planner — right side on desktop, below calendar on mobile */}
         <div className="lg:w-[35%] min-w-0">
           <div className="flex gap-2 mb-3">
-            <Button onClick={randomizeWeek} className={theme.buttonPrimary} size="sm">
-              <Shuffle className="size-4" /> <span className="hidden xs:inline">Randomize</span>
+            <Button onClick={randomizeWeek} className={`${theme.buttonPrimary} min-h-[44px]`}>
+              <Shuffle className="size-4" /> <span className="hidden sm:inline">Randomize</span>
             </Button>
-            <Button variant="outline" onClick={generateShoppingList} className={theme.buttonOutline} size="sm">
-              <ShoppingCart className="size-4" /> <span className="hidden xs:inline">Shopping List</span>
+            <Button variant="outline" onClick={generateShoppingList} className={`${theme.buttonOutline} min-h-[44px]`}>
+              <ShoppingCart className="size-4" /> <span className="hidden sm:inline">Shopping List</span>
             </Button>
-            <Button variant="outline" onClick={clearWeek} className={theme.buttonOutline} size="sm">
-              <Trash2 className="size-4" /> <span className="hidden xs:inline">Clear</span>
+            <Button variant="outline" onClick={clearWeek} className={`${theme.buttonOutline} min-h-[44px]`}>
+              <Trash2 className="size-4" /> <span className="hidden sm:inline">Clear</span>
             </Button>
           </div>
 
-          <div className="grid gap-1.5">
+          <div className="grid gap-2">
         {getOrderedDays().map(({ day, date, dateKey, isToday }) => {
           const recipe = getRecipe(history[dateKey] ?? null);
           return (
-            <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400 bg-amber-100/60" : ""}`} size="sm">
-              <CardContent className="p-2 sm:p-2.5">
+            <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400/50 bg-amber-100/50" : ""}`} size="sm">
+              <CardContent className="p-3 sm:p-3">
                 {recipe ? (
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span className="font-semibold text-amber-800 text-xs">
+                      <span className="font-medium text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
-                        <span className="font-normal text-stone-400 ml-1">{formatDate(date)}</span>
+                        <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
                       </span>
-                      <span className="text-xs text-stone-400 flex items-center gap-0.5 shrink-0">
-                        <Clock className="size-3" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
+                      <span className="text-xs text-amber-600/40 flex items-center gap-1 shrink-0">
+                        <Clock className="size-3.5" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
                       </span>
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
-                      <Link href={`/recipes/${recipe.id}`} className="text-stone-700 hover:text-amber-700 font-medium text-xs truncate">
+                      <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-medium text-sm truncate">
                         {recipe.title}
                       </Link>
-                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Switch recipe">
+                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Switch recipe">
                         <RefreshCw className="size-4" />
                       </button>
-                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Random recipe">
+                      <button onClick={() => randomizeDay(dateKey)} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Random recipe">
                         <Dices className="size-4" />
                       </button>
                     </div>
                     {openDay === dateKey && (
-                      <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg max-h-52 overflow-y-auto">
-                        <div className="p-2 sticky top-0 bg-amber-50 border-b border-amber-100">
+                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
+                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
                           <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search..."
-                            className="w-full text-sm px-3 py-2.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                            autoFocus
+                            className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
                           />
                         </div>
                         {filteredRecipes?.map((r) => (
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200 min-h-[44px]"
+                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
                           >
                             {r.title}
-                            <span className="text-xs text-stone-400 ml-2">
+                            <span className="text-xs text-amber-600/60 ml-2">
                               {r.prepTimeMinutes + r.cookTimeMinutes}m
                             </span>
                           </button>
                         ))}
                         {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-stone-400">No recipes found</div>
+                          <div className="px-3 py-2 text-sm text-amber-600/50">No recipes found</div>
                         )}
                       </div>
                     )}
@@ -209,50 +208,49 @@ export default function PlannerPage() {
                 ) : (
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span className="font-semibold text-amber-800 text-xs">
+                      <span className="font-medium text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
-                        <span className="font-normal text-stone-400 ml-1">{formatDate(date)}</span>
+                        <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }}
-                        className="flex-1 text-left text-stone-400 text-xs py-1 px-1.5 rounded border border-dashed border-amber-200 hover:border-amber-400 hover:text-stone-500 flex items-center justify-between"
+                        className="flex-1 text-left text-amber-400 text-sm py-2 px-3 rounded-xl border border-dashed border-amber-300/60 hover:border-amber-400 hover:text-amber-600 flex items-center justify-between min-h-[44px] transition-colors"
                       >
                         Choose a recipe...
-                        <ChevronDown className="size-3" />
+                        <ChevronDown className="size-4" />
                       </button>
-                      <button onClick={() => randomizeDay(dateKey)} className="text-stone-400 hover:text-amber-600 p-2 -m-1 shrink-0" title="Random recipe">
+                      <button onClick={() => randomizeDay(dateKey)} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Random recipe">
                         <Dices className="size-4" />
                       </button>
                     </div>
 
                     {openDay === dateKey && (
-                      <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg max-h-52 overflow-y-auto">
-                        <div className="p-2 sticky top-0 bg-amber-50 border-b border-amber-100">
+                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
+                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
                           <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search..."
-                            className="w-full text-sm px-3 py-2.5 border border-amber-200 rounded bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                            autoFocus
+                            className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
                           />
                         </div>
                         {filteredRecipes?.map((r) => (
                           <button
                             key={r.id}
                             onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100 text-stone-700 active:bg-amber-200 min-h-[44px]"
+                            className="w-full text-left px-3 py-3 text-sm hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
                           >
                             {r.title}
-                            <span className="text-xs text-stone-400 ml-2">
+                            <span className="text-xs text-amber-600/60 ml-2">
                               {r.prepTimeMinutes + r.cookTimeMinutes}m
                             </span>
                           </button>
                         ))}
                         {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-stone-400">No recipes found</div>
+                          <div className="px-3 py-2 text-sm text-amber-600/50">No recipes found</div>
                         )}
                       </div>
                     )}
@@ -272,7 +270,7 @@ export default function PlannerPage() {
           <DialogHeader>
             <DialogTitle className={theme.cardTitle}>Shopping List</DialogTitle>
           </DialogHeader>
-          <pre className="text-sm text-stone-700 whitespace-pre-wrap bg-amber-50 p-3 sm:p-4 rounded-lg max-h-[60vh] overflow-y-auto">
+          <pre className="text-sm text-amber-900 whitespace-pre-wrap bg-amber-50 p-4 rounded-xl max-h-[60vh] overflow-y-auto">
             {shoppingList}
           </pre>
           <div className="flex gap-2 justify-end">

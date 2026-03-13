@@ -130,12 +130,12 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
           </div>
           <div>
             <Label>Tags</Label>
-            <div className="flex flex-wrap gap-1 mb-2">
+            <div className="flex flex-wrap gap-1.5 mb-2">
               {tags.map((tag) => (
-                <Badge key={tag} className="bg-amber-100 text-amber-800 gap-1">
+                <Badge key={tag} className="bg-amber-100 text-amber-800 gap-1 px-2.5 py-1 text-sm">
                   {tag}
-                  <button type="button" onClick={() => setTags(tags.filter((t) => t !== tag))}>
-                    <X className="size-3" />
+                  <button type="button" onClick={() => setTags(tags.filter((t) => t !== tag))} className="p-0.5">
+                    <X className="size-3.5" />
                   </button>
                 </Badge>
               ))}
@@ -158,13 +158,13 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           {ingredients.map((ing, i) => (
-            <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
+            <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end border-b border-amber-100 pb-3 sm:border-0 sm:pb-0 last:border-0 last:pb-0">
               <div className="flex-1">
                 <Label className="sm:hidden">Name</Label>
                 {i === 0 && <Label className="hidden sm:block">Name</Label>}
                 <Input value={ing.name} onChange={(e) => updateIngredient(i, "name", e.target.value)} placeholder="Ingredient" className={theme.input} />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-end">
                 <div className="flex-1 sm:w-20 sm:flex-none">
                   <Label className="sm:hidden">Amount</Label>
                   {i === 0 && <Label className="hidden sm:block">Amt</Label>}
@@ -176,14 +176,14 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
                   <Input value={ing.unit} onChange={(e) => updateIngredient(i, "unit", e.target.value)} placeholder="cup" className={theme.input} />
                 </div>
                 {ingredients.length > 1 && (
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setIngredients(ingredients.filter((_, j) => j !== i))} className="text-stone-400 hover:text-red-500 shrink-0 self-end">
-                    <Trash2 className="size-4" />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => setIngredients(ingredients.filter((_, j) => j !== i))} className="text-stone-400 hover:text-red-500 shrink-0 min-h-[44px] min-w-[44px]">
+                    <Trash2 className="size-5" />
                   </Button>
                 )}
               </div>
             </div>
           ))}
-          <Button type="button" variant="outline" size="sm" onClick={() => setIngredients([...ingredients, emptyIngredient()])} className={theme.buttonOutline}>
+          <Button type="button" variant="outline" onClick={() => setIngredients([...ingredients, emptyIngredient()])} className={`${theme.buttonOutline} min-h-[44px]`}>
             <Plus className="size-4" /> Add Ingredient
           </Button>
         </CardContent>
@@ -197,18 +197,18 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
         <CardContent className="space-y-3">
           {steps.map((step, i) => (
             <div key={i} className="flex gap-2 items-start">
-              <span className="text-sm font-medium text-amber-600 mt-2 w-6 text-right shrink-0">
+              <span className="text-base font-medium text-amber-600 mt-2.5 w-6 text-right shrink-0">
                 {i + 1}.
               </span>
-              <Textarea value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder="Describe this step..." rows={2} className={`flex-1 ${theme.input}`} />
+              <Textarea value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder="Describe this step..." rows={2} className={`flex-1 text-base ${theme.input}`} />
               {steps.length > 1 && (
-                <Button type="button" variant="ghost" size="icon" onClick={() => setSteps(steps.filter((_, j) => j !== i))} className="text-stone-400 hover:text-red-500 shrink-0 mt-1">
-                  <Trash2 className="size-4" />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setSteps(steps.filter((_, j) => j !== i))} className="text-stone-400 hover:text-red-500 shrink-0 mt-1 min-h-[44px] min-w-[44px]">
+                  <Trash2 className="size-5" />
                 </Button>
               )}
             </div>
           ))}
-          <Button type="button" variant="outline" size="sm" onClick={() => setSteps([...steps, ""])} className={theme.buttonOutline}>
+          <Button type="button" variant="outline" onClick={() => setSteps([...steps, ""])} className={`${theme.buttonOutline} min-h-[44px]`}>
             <Plus className="size-4" /> Add Step
           </Button>
         </CardContent>
@@ -216,10 +216,10 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
 
       {/* Submit */}
       <div className="flex gap-3">
-        <Button type="submit" disabled={isSubmitting} className={theme.buttonPrimary}>
+        <Button type="submit" disabled={isSubmitting} className={`${theme.buttonPrimary} min-h-[44px] px-6`}>
           {isSubmitting ? "Saving..." : recipe ? "Update Recipe" : "Create Recipe"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()} className={theme.buttonOutline}>
+        <Button type="button" variant="outline" onClick={() => router.back()} className={`${theme.buttonOutline} min-h-[44px] px-6`}>
           Cancel
         </Button>
       </div>

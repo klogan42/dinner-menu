@@ -17,7 +17,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <Link href={`/recipes/${recipe.id}`} className="flex-1">
-            <CardTitle className={`${theme.cardTitle} hover:text-amber-700 transition-colors text-base`}>
+            <CardTitle className={`${theme.cardTitle} hover:text-amber-700 transition-colors text-base font-display`}>
               {recipe.title}
             </CardTitle>
           </Link>

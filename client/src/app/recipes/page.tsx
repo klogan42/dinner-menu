@@ -46,10 +46,10 @@ export default function RecipesPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {ALL_TAGS.map((tag) => (
-            <button key={tag} onClick={() => toggleTag(tag)}>
+            <button key={tag} onClick={() => toggleTag(tag)} className="min-h-[36px]">
               <Badge
                 className={cn(
-                  "cursor-pointer text-sm",
+                  "cursor-pointer text-sm px-3 py-1.5",
                   selectedTags.includes(tag) ? theme.tagActive : `${theme.tag} hover:bg-amber-200`
                 )}
               >

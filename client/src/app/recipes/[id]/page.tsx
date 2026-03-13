@@ -67,21 +67,21 @@ export default function RecipeDetailPage({
 
   return (
     <div className="w-full min-w-0">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-amber-700" size="sm">
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-amber-700 hover:text-amber-900 min-h-[44px]">
         <ArrowLeft className="size-4" /> Back
       </Button>
 
       {/* Title + favorite */}
       <div className="mb-4">
         <div className="flex items-start gap-2 mb-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-amber-900 break-words min-w-0">
+          <h1 className="text-2xl font-display text-amber-900 break-words min-w-0">
             {recipe.title}
           </h1>
           <button onClick={() => toggleFav.mutate(recipe.id)} className="text-amber-400 hover:text-amber-500 shrink-0 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <Star className="size-5 sm:size-6" fill={recipe.isFavorite ? "currentColor" : "none"} />
           </button>
         </div>
-        <p className={`text-sm ${theme.muted}`}>{recipe.description}</p>
+        <p className={`text-base ${theme.muted}`}>{recipe.description}</p>
         <div className="flex flex-wrap gap-1.5 mt-2">
           {recipe.tags.map((tag) => (
             <Badge key={tag} className={theme.tag}>{tag}</Badge>
@@ -91,21 +91,21 @@ export default function RecipeDetailPage({
 
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mb-4">
-        <Button variant="outline" onClick={handleAddToWeek} className={theme.buttonOutline} size="sm">
+        <Button variant="outline" onClick={handleAddToWeek} className={`${theme.buttonOutline} min-h-[44px]`}>
           <CalendarPlus className="size-4" /> Add to Week
         </Button>
         <Link href={`/recipes/${recipe.id}/edit`}>
-          <Button variant="outline" className={theme.buttonOutline} size="sm">
+          <Button variant="outline" className={`${theme.buttonOutline} min-h-[44px]`}>
             <Pencil className="size-4" /> Edit
           </Button>
         </Link>
-        <Button variant="destructive" onClick={handleDelete} size="sm">
+        <Button variant="destructive" onClick={handleDelete} className="min-h-[44px]">
           <Trash2 className="size-4" /> Delete
         </Button>
       </div>
 
       {/* Time + servings */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-4 text-sm text-stone-600 mb-6">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-base sm:text-sm text-amber-800/70 mb-6">
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Prep: {recipe.prepTimeMinutes}m</span>
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Cook: {recipe.cookTimeMinutes}m</span>
         <span className="font-medium text-amber-700">Total: {totalTime}m</span>
@@ -119,9 +119,9 @@ export default function RecipeDetailPage({
             <CardTitle className={`${theme.cardTitle} text-base`}>Ingredients</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
               {recipe.ingredients.map((ing, i) => (
-                <li key={i} className="text-sm text-stone-700">
+                <li key={i} className="text-base text-amber-900">
                   <span className="font-medium">{ing.amount} {ing.unit}</span> {ing.name}
                 </li>
               ))}
@@ -134,9 +134,9 @@ export default function RecipeDetailPage({
             <CardTitle className={`${theme.cardTitle} text-base`}>Steps</CardTitle>
           </CardHeader>
           <CardContent>
-            <ol className="space-y-2.5">
+            <ol className="space-y-3">
               {recipe.steps.map((step, i) => (
-                <li key={i} className="flex gap-2 text-sm text-stone-700">
+                <li key={i} className="flex gap-2 text-base text-amber-900">
                   <span className="font-bold text-amber-600 shrink-0">{i + 1}.</span>
                   <span>{step}</span>
                 </li>

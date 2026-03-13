@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { NavBar } from "@/components/nav-bar";
@@ -11,6 +11,12 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const dmSerif = DM_Serif_Display({
+  variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -32,11 +38,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Dinner Table" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${dmSerif.variable} antialiased`}
       >
         <Providers>
           <NavBar />
-          <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 overflow-x-hidden">{children}</main>
+          <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-18 sm:pt-20 pb-4 sm:pb-6 overflow-x-hidden">{children}</main>
         </Providers>
       </body>
     </html>
