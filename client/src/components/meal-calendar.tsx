@@ -340,10 +340,10 @@ export function MealCalendar() {
                           {isEatOut && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
-                              className="flex items-center gap-1 mt-0.5 text-left"
+                              className="flex items-center gap-1.5 mt-1 text-left"
                             >
-                              <Store className="size-3 text-amber-500" />
-                              <span className="text-xs text-amber-600 hover:text-amber-800 transition-colors">
+                              <Store className={`size-3.5 ${restaurantName ? "text-amber-600" : "text-amber-400"}`} />
+                              <span className={`text-sm font-display transition-colors ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400 hover:text-amber-600"}`}>
                                 {restaurantName ?? "Pick restaurant..."}
                               </span>
                             </button>
@@ -430,8 +430,10 @@ export function MealCalendar() {
                     )}
                     {isEatOut && (
                       <div className="flex items-center gap-1 mt-0.5">
-                        <Store className="size-3 text-amber-500" />
-                        <span className="text-[11px] text-amber-600 line-clamp-1">{restaurantName ?? "Pick..."}</span>
+                        <Store className={`size-3 ${restaurantName ? "text-amber-600" : "text-amber-400"}`} />
+                        <span className={`text-xs line-clamp-1 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                          {restaurantName ?? "Pick..."}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -486,9 +488,9 @@ export function MealCalendar() {
                       {recipeName}
                     </div>
                   )}
-                  {isEatOut && restaurantName && (
-                    <div className="text-[9px] sm:text-[10px] text-amber-600 line-clamp-1 mt-0.5">
-                      {restaurantName}
+                  {isEatOut && (
+                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                      {restaurantName ?? "Pick..."}
                     </div>
                   )}
                 </div>

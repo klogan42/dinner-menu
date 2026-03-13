@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, RefreshCw, Dices } from "lucide-react";
+import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, RefreshCw, Dices, Store, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useRecipes, useMealHistory, useSetMealHistory } from "@/lib/hooks";
+import { useRecipes, useRestaurants, useMealHistory, useSetMealHistory } from "@/lib/hooks";
 import { api } from "@/lib/api";
 import { DAYS } from "@/lib/types";
 import { theme } from "@/lib/styles";
@@ -53,11 +53,33 @@ export default function PlannerPage() {
   const { data: historyNextMonth = {} } = useMealHistory(nextMonthYear, nextMonth);
   const history = needsNextMonth ? { ...historyThisMonth, ...historyNextMonth } : historyThisMonth;
 
+  const { data: restaurants } = useRestaurants();
   const setMealHistory = useSetMealHistory();
   const [openDay, setOpenDay] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [shoppingList, setShoppingList] = useState("");
   const [showShoppingList, setShowShoppingList] = useState(false);
+  const [restaurantPickerDay, setRestaurantPickerDay] = useState<string | null>(null);
+  const [restaurantSearch, setRestaurantSearch] = useState("");
+
+  const getRestaurant = (id: string | null | undefined) =>
+    id ? restaurants?.find((r) => r.id === id) : undefined;
+
+  const isEatOutRecipe = (recipe: { tags: string[]; title: string }) =>
+    recipe.tags.includes("eat out") || recipe.title.toLowerCase().includes("eat out");
+
+  const assignRestaurant = (dateKey: string, restaurantId: string) => {
+    const entry = history[dateKey];
+    if (entry?.recipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId: entry.recipeId, restaurantId });
+    }
+    setRestaurantPickerDay(null);
+    setRestaurantSearch("");
+  };
+
+  const filteredRestaurants = restaurants?.filter((r) =>
+    r.name.toLowerCase().includes(restaurantSearch.toLowerCase())
+  );
 
   const assignRecipe = (dateKey: string, recipeId: string) => {
     setMealHistory.mutate({ date: dateKey, recipeId });
@@ -176,6 +198,54 @@ export default function PlannerPage() {
                         <Dices className="size-4" />
                       </button>
                     </div>
+                    {isEatOutRecipe(recipe) && (() => {
+                      const rest = getRestaurant(history[dateKey]?.restaurantId);
+                      return (
+                        <button
+                          onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                          className="flex items-center gap-1.5 mt-1 text-left"
+                        >
+                          <Store className={`size-3.5 ${rest ? "text-amber-600" : "text-amber-400"}`} />
+                          <span className={`text-sm font-display transition-colors ${rest ? "text-amber-800 font-bold" : "text-amber-400 hover:text-amber-600"}`}>
+                            {rest?.name ?? "Pick restaurant..."}
+                          </span>
+                        </button>
+                      );
+                    })()}
+                    {restaurantPickerDay === dateKey && (
+                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
+                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-display text-amber-800 flex items-center gap-1">
+                              <Store className="size-3.5" /> Pick a restaurant
+                            </span>
+                            <button onClick={() => { setRestaurantPickerDay(null); setRestaurantSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
+                              <X className="size-4" />
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            value={restaurantSearch}
+                            onChange={(e) => setRestaurantSearch(e.target.value)}
+                            placeholder="Search restaurants..."
+                            className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+                          />
+                        </div>
+                        {filteredRestaurants?.map((r) => (
+                          <button
+                            key={r.id}
+                            onClick={() => assignRestaurant(dateKey, r.id)}
+                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
+                          >
+                            {r.name}
+                            {r.cuisine && <span className="text-xs text-amber-600/60 ml-2">{r.cuisine}</span>}
+                          </button>
+                        ))}
+                        {filteredRestaurants?.length === 0 && (
+                          <div className="px-3 py-2 text-sm text-amber-600/50">No restaurants found</div>
+                        )}
+                      </div>
+                    )}
                     {openDay === dateKey && (
                       <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
                         <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
