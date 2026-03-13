@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Recipe } from "@/models/Recipe";
 import { MealHistory } from "@/models/MealHistory";
@@ -275,8 +275,18 @@ const seedRecipes = [
   },
 ];
 
-// POST /api/seed — wipe and reseed
-export async function POST() {
+// POST /api/seed — wipe and reseed (disabled in production)
+export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const apiKey = req.headers.get("x-api-key");
+  const secret = process.env.API_SECRET_KEY;
+  if (!secret || apiKey !== secret) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectDB();
     await Recipe.deleteMany({});
@@ -286,7 +296,7 @@ export async function POST() {
       message: `Seeded ${created.length} recipes`,
       recipes: created,
     });
-  } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -15,7 +15,7 @@ export async function GET() {
       __v: undefined,
     }));
     return NextResponse.json(formatted);
-  } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

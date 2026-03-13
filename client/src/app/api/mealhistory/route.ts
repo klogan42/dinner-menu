@@ -1,19 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { MealHistory } from "@/models/MealHistory";
+import { mealHistoryQuerySchema } from "@/lib/validations";
 
 // GET /api/mealhistory?year=2026&month=3
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
     const { searchParams } = req.nextUrl;
-    const year = parseInt(searchParams.get("year") || "0");
-    const month = parseInt(searchParams.get("month") || "0");
+    const parsed = mealHistoryQuerySchema.safeParse({
+      year: searchParams.get("year"),
+      month: searchParams.get("month"),
+    });
 
-    if (!year || !month) {
-      return NextResponse.json({ error: "year and month required" }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Valid year and month required" }, { status: 400 });
     }
 
+    const { year, month } = parsed.data;
     const from = `${year}-${String(month).padStart(2, "0")}-01`;
     const to = `${year}-${String(month).padStart(2, "0")}-31`;
 
@@ -27,7 +31,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(result);
-  } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
