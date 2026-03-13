@@ -98,7 +98,7 @@ export default function PlannerPage() {
     const map = new Map<string, { amount: string; unit: string }[]>();
     const days = getOrderedDays();
     days.forEach(({ dateKey }) => {
-      const recipe = getRecipe(history[dateKey] ?? null);
+      const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
       recipe?.ingredients.forEach((ing) => {
         const key = ing.name.toLowerCase();
         if (!map.has(key)) map.set(key, []);
@@ -150,14 +150,14 @@ export default function PlannerPage() {
 
           <div className="grid gap-2">
         {getOrderedDays().map(({ day, date, dateKey, isToday }) => {
-          const recipe = getRecipe(history[dateKey] ?? null);
+          const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
           return (
             <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400/50 bg-amber-100/50" : ""}`} size="sm">
               <CardContent className="p-3 sm:p-3">
                 {recipe ? (
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span className="font-medium text-amber-900 text-sm">
+                      <span className="font-display text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
                         <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
                       </span>
@@ -208,7 +208,7 @@ export default function PlannerPage() {
                 ) : (
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span className="font-medium text-amber-900 text-sm">
+                      <span className="font-display text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
                         <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
                       </span>
@@ -216,7 +216,7 @@ export default function PlannerPage() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }}
-                        className="flex-1 text-left text-amber-400 text-sm py-2 px-3 rounded-xl border border-dashed border-amber-300/60 hover:border-amber-400 hover:text-amber-600 flex items-center justify-between min-h-[44px] transition-colors"
+                        className="flex-1 text-left text-amber-400 text-sm font-display py-2 px-3 rounded-xl border border-dashed border-amber-300/60 hover:border-amber-400 hover:text-amber-600 flex items-center justify-between min-h-[44px] transition-colors"
                       >
                         Choose a recipe...
                         <ChevronDown className="size-4" />

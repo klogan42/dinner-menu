@@ -197,7 +197,7 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
         <CardContent className="space-y-3">
           {steps.map((step, i) => (
             <div key={i} className="flex gap-2 items-start">
-              <span className="text-base font-medium text-amber-600 mt-2.5 w-6 text-right shrink-0">
+              <span className="text-base font-display text-amber-600 mt-2.5 w-6 text-right shrink-0">
                 {i + 1}.
               </span>
               <Textarea value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder="Describe this step..." rows={2} className={`flex-1 text-base ${theme.input}`} />

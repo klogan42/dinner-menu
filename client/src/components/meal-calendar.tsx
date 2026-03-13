@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, X, CalendarDays, CalendarRange } from "lucide-react";
-import { useMealHistory, useRecipes, useSetMealHistory } from "@/lib/hooks";
+import { ChevronLeft, ChevronRight, X, CalendarDays, CalendarRange, Store } from "lucide-react";
+import { useMealHistory, useRecipes, useRestaurants, useSetMealHistory } from "@/lib/hooks";
 
 const DAY_NAMES_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_NAMES_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -52,6 +52,8 @@ export function MealCalendar() {
   const [monthMonth, setMonthMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [restaurantPickerDate, setRestaurantPickerDate] = useState<string | null>(null);
+  const [restaurantSearch, setRestaurantSearch] = useState("");
 
   const windowStart = useMemo(() => {
     const start = new Date(now);
@@ -81,12 +83,22 @@ export function MealCalendar() {
   const history = { ...history1, ...history2 };
 
   const { data: recipes } = useRecipes();
+  const { data: restaurants } = useRestaurants();
   const setMealHistory = useSetMealHistory();
 
   const todayKey = toDateKey(now);
 
   const getRecipeName = (recipeId: string) =>
     recipes?.find((r) => r.id === recipeId)?.title;
+
+  const getRestaurantName = (restaurantId: string) =>
+    restaurants?.find((r) => r.id === restaurantId)?.name;
+
+  // Check if a recipe is the "Eat Out" recipe
+  const isEatOutRecipe = (recipeId: string) => {
+    const recipe = recipes?.find((r) => r.id === recipeId);
+    return recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+  };
 
   const prev = () => {
     if (view === "2week") { setWeekOffset(weekOffset - 1); }
@@ -113,9 +125,29 @@ export function MealCalendar() {
 
   const assignMeal = (recipeId: string) => {
     if (!selectedDate) return;
-    setMealHistory.mutate({ date: selectedDate, recipeId });
-    setSelectedDate(null);
-    setSearch("");
+    const recipe = recipes?.find((r) => r.id === recipeId);
+    const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+    if (isEatOut && restaurants?.length) {
+      // Assign the eat out recipe, then prompt for restaurant
+      setMealHistory.mutate({ date: selectedDate, recipeId });
+      setRestaurantPickerDate(selectedDate);
+      setRestaurantSearch("");
+      setSelectedDate(null);
+      setSearch("");
+    } else {
+      setMealHistory.mutate({ date: selectedDate, recipeId });
+      setSelectedDate(null);
+      setSearch("");
+    }
+  };
+
+  const assignRestaurant = (dateKey: string, restaurantId: string) => {
+    const entry = history[dateKey];
+    if (entry?.recipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId: entry.recipeId, restaurantId });
+    }
+    setRestaurantPickerDate(null);
+    setRestaurantSearch("");
   };
 
   const clearMeal = (dateKey: string) => {
@@ -124,6 +156,10 @@ export function MealCalendar() {
 
   const filteredRecipes = recipes?.filter((r) =>
     r.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredRestaurants = restaurants?.filter((r) =>
+    r.name.toLowerCase().includes(restaurantSearch.toLowerCase())
   );
 
   const headerLabel = view === "2week"
@@ -144,7 +180,7 @@ export function MealCalendar() {
     <div className="mt-3 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
       <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-sm font-medium text-amber-800">
+          <span className="text-sm font-display text-amber-800">
             {new Date(selectedDate + "T00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
           </span>
           <button onClick={() => { setSelectedDate(null); setSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
@@ -177,6 +213,45 @@ export function MealCalendar() {
     </div>
   );
 
+  // Restaurant picker — shows after selecting "Eat Out"
+  const restaurantPicker = (dateKey: string) =>
+    restaurantPickerDate === dateKey && (
+      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
+        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm font-display text-amber-800 flex items-center gap-1">
+              <Store className="size-3.5" /> Pick a restaurant
+            </span>
+            <button onClick={() => { setRestaurantPickerDate(null); setRestaurantSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
+              <X className="size-4" />
+            </button>
+          </div>
+          <input
+            type="text"
+            value={restaurantSearch}
+            onChange={(e) => setRestaurantSearch(e.target.value)}
+            placeholder="Search restaurants..."
+            className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+          />
+        </div>
+        {filteredRestaurants?.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => assignRestaurant(dateKey, r.id)}
+            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
+          >
+            {r.name}
+            {r.cuisine && (
+              <span className="text-xs text-amber-600/60 ml-2">{r.cuisine}</span>
+            )}
+          </button>
+        ))}
+        {filteredRestaurants?.length === 0 && (
+          <div className="px-3 py-2 text-sm text-amber-600/50">No restaurants found</div>
+        )}
+      </div>
+    );
+
   return (
     <div className="w-full">
       {/* Nav */}
@@ -187,7 +262,7 @@ export function MealCalendar() {
         <div className="text-center">
           <h2 className="text-sm font-display text-amber-900">{headerLabel}</h2>
           {showBackToToday && (
-            <button onClick={goToday} className="text-xs text-amber-500 hover:text-amber-600 mt-0.5 transition-colors">
+            <button onClick={goToday} className="text-xs font-display text-amber-500 hover:text-amber-600 mt-0.5 transition-colors">
               Back to today
             </button>
           )}
@@ -202,14 +277,14 @@ export function MealCalendar() {
         <div className="inline-flex rounded-lg border border-amber-200 overflow-hidden">
           <button
             onClick={() => setView("2week")}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px] ${view === "2week" ? "bg-amber-100 text-amber-700" : "text-amber-500/60 hover:text-amber-700 hover:bg-amber-50"}`}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-display transition-colors min-h-[36px] ${view === "2week" ? "bg-amber-100 text-amber-700" : "text-amber-500/60 hover:text-amber-700 hover:bg-amber-50"}`}
           >
             <CalendarRange className="size-3.5" />
             2 Week
           </button>
           <button
             onClick={() => setView("month")}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px] ${view === "month" ? "bg-amber-100 text-amber-700" : "text-amber-500/60 hover:text-amber-700 hover:bg-amber-50"}`}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-display transition-colors min-h-[36px] ${view === "month" ? "bg-amber-100 text-amber-700" : "text-amber-500/60 hover:text-amber-700 hover:bg-amber-50"}`}
           >
             <CalendarDays className="size-3.5" />
             Month
@@ -225,8 +300,12 @@ export function MealCalendar() {
               const key = toDateKey(date);
               const isToday = key === todayKey;
               const isPast = key < todayKey;
-              const recipeId = history[key];
+              const entry = history[key];
+              const recipeId = entry?.recipeId;
+              const restaurantId = entry?.restaurantId;
               const recipeName = recipeId ? getRecipeName(recipeId) : undefined;
+              const restaurantName = restaurantId ? getRestaurantName(restaurantId) : undefined;
+              const isEatOut = recipeId ? isEatOutRecipe(recipeId) : false;
               const isSelected = key === selectedDate;
 
               return (
@@ -243,7 +322,7 @@ export function MealCalendar() {
                   >
                     {/* Date column */}
                     <div className="w-12 shrink-0 text-center">
-                      <div className={`text-lg font-semibold leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
+                      <div className={`text-lg font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
                         {date.getDate()}
                       </div>
                       <div className={`text-[11px] leading-tight ${isToday ? "text-amber-500" : "text-amber-600/40"}`}>
@@ -254,11 +333,24 @@ export function MealCalendar() {
                     {/* Recipe name */}
                     <div className="flex-1 min-w-0">
                       {recipeName ? (
-                        <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
-                          {recipeName}
-                        </span>
+                        <div>
+                          <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                            {recipeName}
+                          </span>
+                          {isEatOut && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
+                              className="flex items-center gap-1 mt-0.5 text-left"
+                            >
+                              <Store className="size-3 text-amber-500" />
+                              <span className="text-xs text-amber-600 hover:text-amber-800 transition-colors">
+                                {restaurantName ?? "Pick restaurant..."}
+                              </span>
+                            </button>
+                          )}
+                        </div>
                       ) : (
-                        <span className="text-sm text-amber-400">
+                        <span className="text-sm font-display text-amber-400">
                           {isPast ? "—" : "Tap to add..."}
                         </span>
                       )}
@@ -277,6 +369,7 @@ export function MealCalendar() {
 
                   {/* Inline recipe picker for this day */}
                   {isSelected && recipePicker}
+                  {restaurantPicker(key)}
                 </div>
               );
             })}
@@ -286,7 +379,7 @@ export function MealCalendar() {
           <div className="hidden sm:block">
             <div className="grid grid-cols-7 gap-1 mb-1">
               {twoWeekDays.slice(0, 7).map((date) => (
-                <div key={date.getDay()} className="text-center text-xs font-medium text-amber-600/50 py-1">
+                <div key={date.getDay()} className="text-center text-xs font-display text-amber-600/50 py-1">
                   {DAY_NAMES_SHORT[date.getDay()]}
                 </div>
               ))}
@@ -296,8 +389,12 @@ export function MealCalendar() {
                 const key = toDateKey(date);
                 const isToday = key === todayKey;
                 const isPast = key < todayKey;
-                const recipeId = history[key];
+                const entry = history[key];
+                const recipeId = entry?.recipeId;
+                const restaurantId = entry?.restaurantId;
                 const recipeName = recipeId ? getRecipeName(recipeId) : undefined;
+                const restaurantName = restaurantId ? getRestaurantName(restaurantId) : undefined;
+                const isEatOut = recipeId ? isEatOutRecipe(recipeId) : false;
                 const isSelected = key === selectedDate;
 
                 return (
@@ -314,7 +411,7 @@ export function MealCalendar() {
                     `}
                   >
                     <div className="flex items-start justify-between">
-                      <span className={`text-lg font-semibold leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
+                      <span className={`text-lg font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
                         {date.getDate()}
                       </span>
                       {recipeName && (
@@ -331,6 +428,12 @@ export function MealCalendar() {
                         {recipeName}
                       </div>
                     )}
+                    {isEatOut && (
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <Store className="size-3 text-amber-500" />
+                        <span className="text-[11px] text-amber-600 line-clamp-1">{restaurantName ?? "Pick..."}</span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -342,7 +445,7 @@ export function MealCalendar() {
         <>
           <div className="grid grid-cols-7 gap-1 mb-1">
             {DAY_LETTERS.map((d, i) => (
-              <div key={i} className="text-center text-xs font-medium text-amber-600/50 py-1">
+              <div key={i} className="text-center text-xs font-display text-amber-600/50 py-1">
                 {d}
               </div>
             ))}
@@ -354,8 +457,12 @@ export function MealCalendar() {
               const key = toDateKey(date);
               const isToday = key === todayKey;
               const isPast = key < todayKey;
-              const recipeId = history[key];
+              const entry = history[key];
+              const recipeId = entry?.recipeId;
+              const restaurantId = entry?.restaurantId;
               const recipeName = recipeId ? getRecipeName(recipeId) : undefined;
+              const restaurantName = restaurantId ? getRestaurantName(restaurantId) : undefined;
+              const isEatOut = recipeId ? isEatOutRecipe(recipeId) : false;
               const isSelected = key === selectedDate;
 
               return (
@@ -371,12 +478,17 @@ export function MealCalendar() {
                     ${isPast && !isToday && !isSelected ? "opacity-60" : ""}
                   `}
                 >
-                  <span className={`text-xs sm:text-sm font-semibold leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
+                  <span className={`text-xs sm:text-sm font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
                     {date.getDate()}
                   </span>
                   {recipeName && (
                     <div className={`mt-0.5 text-[10px] sm:text-xs leading-snug line-clamp-2 font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                       {recipeName}
+                    </div>
+                  )}
+                  {isEatOut && restaurantName && (
+                    <div className="text-[9px] sm:text-[10px] text-amber-600 line-clamp-1 mt-0.5">
+                      {restaurantName}
                     </div>
                   )}
                 </div>
@@ -390,6 +502,13 @@ export function MealCalendar() {
       <div className={view === "2week" ? "hidden sm:block" : ""}>
         {recipePicker}
       </div>
+
+      {/* Restaurant picker for desktop / month view */}
+      {restaurantPickerDate && (
+        <div className={view === "2week" ? "hidden sm:block" : ""}>
+          {restaurantPicker(restaurantPickerDate)}
+        </div>
+      )}
     </div>
   );
 }

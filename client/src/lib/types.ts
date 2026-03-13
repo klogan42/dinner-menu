@@ -18,6 +18,21 @@ export interface Recipe {
   createdAt: string;
 }
 
+export interface Restaurant {
+  id: string;
+  name: string;
+  cuisine: string;
+  rating: number;
+  notes: string;
+  isFavorite: boolean;
+  createdAt: string;
+}
+
+export interface MealHistoryEntry {
+  recipeId: string | null;
+  restaurantId?: string | null;
+}
+
 export interface WeekPlan {
   [day: string]: string | null; // recipe ID or null
 }

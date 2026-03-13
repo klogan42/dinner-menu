@@ -56,7 +56,7 @@ export default function RecipeDetailPage({
 
   const handleAddToWeek = () => {
     const weekKeys = getWeekDateKeys();
-    const emptyDate = weekKeys.find((k) => !history[k]);
+    const emptyDate = weekKeys.find((k) => !history[k]?.recipeId);
     if (emptyDate) {
       setMealHistory.mutate({ date: emptyDate, recipeId: recipe.id });
       router.push("/");
@@ -108,7 +108,7 @@ export default function RecipeDetailPage({
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-base sm:text-sm text-amber-800/70 mb-6">
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Prep: {recipe.prepTimeMinutes}m</span>
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Cook: {recipe.cookTimeMinutes}m</span>
-        <span className="font-medium text-amber-700">Total: {totalTime}m</span>
+        <span className="font-display text-amber-700">Total: {totalTime}m</span>
         <span className="flex items-center gap-1"><Users className="size-3.5" /> {recipe.servings} servings</span>
       </div>
 
@@ -122,7 +122,7 @@ export default function RecipeDetailPage({
             <ul className="space-y-2">
               {recipe.ingredients.map((ing, i) => (
                 <li key={i} className="text-base text-amber-900">
-                  <span className="font-medium">{ing.amount} {ing.unit}</span> {ing.name}
+                  <span className="font-display">{ing.amount} {ing.unit}</span> {ing.name}
                 </li>
               ))}
             </ul>
@@ -137,7 +137,7 @@ export default function RecipeDetailPage({
             <ol className="space-y-3">
               {recipe.steps.map((step, i) => (
                 <li key={i} className="flex gap-2 text-base text-amber-900">
-                  <span className="font-bold text-amber-600 shrink-0">{i + 1}.</span>
+                  <span className="font-display text-amber-600 shrink-0">{i + 1}.</span>
                   <span>{step}</span>
                 </li>
               ))}

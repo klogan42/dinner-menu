@@ -20,6 +20,15 @@ export const recipeSchema = z.object({
 
 export const mealHistoryUpdateSchema = z.object({
   recipeId: z.string().min(1).max(100).nullable(),
+  restaurantId: z.string().min(1).max(100).nullable().optional(),
+});
+
+export const restaurantSchema = z.object({
+  name: z.string().min(1).max(255),
+  cuisine: z.string().max(100).default(""),
+  rating: z.number().min(0).max(5).default(0),
+  notes: z.string().max(2000).default(""),
+  isFavorite: z.boolean().default(false),
 });
 
 export const dateParamSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD");

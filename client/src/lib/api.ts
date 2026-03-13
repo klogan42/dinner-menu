@@ -1,4 +1,4 @@
-import { Recipe } from "./types";
+import { Recipe, Restaurant, MealHistoryEntry } from "./types";
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -40,11 +40,34 @@ export const api = {
   getRandomRecipes: () => fetchJson<Recipe[]>("/api/recipes/random"),
 
   getMealHistory: (year: number, month: number) =>
-    fetchJson<Record<string, string>>(`/api/mealhistory?year=${year}&month=${month}`),
+    fetchJson<Record<string, MealHistoryEntry>>(`/api/mealhistory?year=${year}&month=${month}`),
 
-  setMealHistory: (date: string, recipeId: string | null) =>
+  setMealHistory: (date: string, recipeId: string | null, restaurantId?: string | null) =>
     fetchJson<void>(`/api/mealhistory/${date}`, {
       method: "PUT",
-      body: JSON.stringify({ recipeId }),
+      body: JSON.stringify({ recipeId, restaurantId }),
     }),
+
+  // Restaurants
+  getRestaurants: () => fetchJson<Restaurant[]>("/api/restaurants"),
+
+  getRestaurant: (id: string) => fetchJson<Restaurant>(`/api/restaurants/${id}`),
+
+  createRestaurant: (restaurant: Omit<Restaurant, "id" | "createdAt">) =>
+    fetchJson<Restaurant>("/api/restaurants", {
+      method: "POST",
+      body: JSON.stringify(restaurant),
+    }),
+
+  updateRestaurant: (id: string, restaurant: Omit<Restaurant, "id" | "createdAt">) =>
+    fetchJson<Restaurant>(`/api/restaurants/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(restaurant),
+    }),
+
+  deleteRestaurant: (id: string) =>
+    fetchJson<void>(`/api/restaurants/${id}`, { method: "DELETE" }),
+
+  toggleRestaurantFavorite: (id: string) =>
+    fetchJson<Restaurant>(`/api/restaurants/${id}/favorite`, { method: "PATCH" }),
 };
