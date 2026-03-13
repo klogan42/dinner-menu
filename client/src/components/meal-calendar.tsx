@@ -185,7 +185,7 @@ export function MealCalendar() {
           <ChevronLeft className="size-5" />
         </button>
         <div className="text-center">
-          <h2 className="text-sm font-semibold text-amber-900">{headerLabel}</h2>
+          <h2 className="text-sm font-display text-amber-900">{headerLabel}</h2>
           {showBackToToday && (
             <button onClick={goToday} className="text-xs text-amber-500 hover:text-amber-600 mt-0.5 transition-colors">
               Back to today
