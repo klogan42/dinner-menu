@@ -7,6 +7,7 @@ export interface IIngredient {
 }
 
 export interface IRecipe extends Document {
+  userId: string;
   title: string;
   description: string;
   tags: string[];
@@ -30,6 +31,7 @@ const IngredientSchema = new Schema<IIngredient>(
 
 const RecipeSchema = new Schema<IRecipe>(
   {
+    userId: { type: String, default: null, index: true },
     title: { type: String, required: true },
     description: { type: String, default: "" },
     tags: { type: [String], default: [] },

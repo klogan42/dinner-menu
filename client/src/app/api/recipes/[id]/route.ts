@@ -2,16 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Recipe } from "@/models/Recipe";
 import { recipeSchema } from "@/lib/validations";
+import { requireUserId } from "@/lib/session";
 
 // GET /api/recipes/[id]
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireUserId();
+  if (auth.error) return auth.error;
   try {
     await connectDB();
     const { id } = await params;
-    const recipe = await Recipe.findById(id);
+    const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(recipe);
   } catch {
@@ -24,6 +27,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireUserId();
+  if (auth.error) return auth.error;
   try {
     await connectDB();
     const { id } = await params;
@@ -32,7 +37,11 @@ export async function PUT(
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
-    const recipe = await Recipe.findByIdAndUpdate(id, parsed.data, { new: true });
+    const recipe = await Recipe.findOneAndUpdate(
+      { _id: id, userId: auth.userId },
+      parsed.data,
+      { new: true }
+    );
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(recipe);
   } catch {
@@ -45,10 +54,12 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireUserId();
+  if (auth.error) return auth.error;
   try {
     await connectDB();
     const { id } = await params;
-    const deleted = await Recipe.findByIdAndDelete(id);
+    const deleted = await Recipe.findOneAndDelete({ _id: id, userId: auth.userId });
     if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return new NextResponse(null, { status: 204 });
   } catch {

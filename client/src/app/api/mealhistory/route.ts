@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { MealHistory } from "@/models/MealHistory";
 import { mealHistoryQuerySchema } from "@/lib/validations";
+import { requireUserId } from "@/lib/session";
 
 // GET /api/mealhistory?year=2026&month=3
 export async function GET(req: NextRequest) {
+  const auth = await requireUserId();
+  if (auth.error) return auth.error;
   try {
     await connectDB();
     const { searchParams } = req.nextUrl;
@@ -22,6 +25,7 @@ export async function GET(req: NextRequest) {
     const to = `${year}-${String(month).padStart(2, "0")}-31`;
 
     const entries = await MealHistory.find({
+      userId: auth.userId,
       date: { $gte: from, $lte: to },
     });
 

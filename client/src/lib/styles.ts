@@ -11,7 +11,7 @@ export const theme = {
   cardTitle: "text-amber-900 font-display",
 
   // Inputs and textareas
-  input: "border-amber-200 bg-white focus-visible:ring-amber-400/50 focus-visible:border-amber-400 rounded-xl",
+  input: "font-display border-amber-200 bg-white focus-visible:ring-amber-400/50 focus-visible:border-amber-400 rounded-xl",
 
   // Primary button (filled)
   buttonPrimary: "bg-amber-500 hover:bg-amber-600 text-white shadow-sm rounded-xl",

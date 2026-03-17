@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IRestaurant extends Document {
+  userId: string;
   name: string;
   cuisine: string;
   rating: number;
@@ -11,6 +12,7 @@ export interface IRestaurant extends Document {
 
 const RestaurantSchema = new Schema<IRestaurant>(
   {
+    userId: { type: String, default: null, index: true },
     name: { type: String, required: true },
     cuisine: { type: String, default: "" },
     rating: { type: Number, default: 0, min: 0, max: 5 },

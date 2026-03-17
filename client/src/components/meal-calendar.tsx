@@ -188,7 +188,7 @@ export function MealCalendar() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search recipes..."
-          className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+          className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
         />
       </div>
       {filteredRecipes?.map((r) => (
@@ -227,7 +227,7 @@ export function MealCalendar() {
             value={restaurantSearch}
             onChange={(e) => setRestaurantSearch(e.target.value)}
             placeholder="Search restaurants..."
-            className="w-full text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
+            className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
           />
         </div>
         {filteredRestaurants?.map((r) => (

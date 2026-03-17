@@ -39,6 +39,12 @@ export const api = {
 
   getRandomRecipes: () => fetchJson<Recipe[]>("/api/recipes/random"),
 
+  getRecipeHistory: (id: string) =>
+    fetchJson<{ date: string; restaurantId: string | null }[]>(`/api/recipes/${id}/history`),
+
+  getRecipeCooked: () =>
+    fetchJson<Record<string, string[]>>("/api/recipes/cooked"),
+
   getMealHistory: (year: number, month: number) =>
     fetchJson<Record<string, MealHistoryEntry>>(`/api/mealhistory?year=${year}&month=${month}`),
 

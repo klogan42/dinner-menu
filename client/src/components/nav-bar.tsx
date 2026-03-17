@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UtensilsCrossed, CalendarDays, Plus, Store } from "lucide-react";
+import { UtensilsCrossed, CalendarDays, Plus, Store, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession, signOut } from "next-auth/react";
 
 const links = [
   { href: "/", label: "This Week", icon: CalendarDays },
@@ -13,6 +14,7 @@ const links = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const addHref = pathname.startsWith("/restaurants")
     ? "/add?type=restaurant"
@@ -29,43 +31,53 @@ export function NavBar() {
           Dinner Table
         </Link>
 
-        <nav className="flex items-center gap-0.5">
-          {links.map(({ href, label, icon: Icon }) => {
-            const active =
-              href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(href);
+        {session ? (
+          <nav className="flex items-center gap-0.5">
+            {links.map(({ href, label, icon: Icon }) => {
+              const active =
+                href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(href);
 
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px]",
-                  active
-                    ? "bg-amber-100/70 text-amber-700"
-                    : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
-                )}
-              >
-                <Icon className="size-5" />
-                <span className="hidden sm:inline">{label}</span>
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px]",
+                    active
+                      ? "bg-amber-100/70 text-amber-700"
+                      : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
+                  )}
+                >
+                  <Icon className="size-5" />
+                  <span className="hidden sm:inline">{label}</span>
+                </Link>
+              );
+            })}
 
-          <Link
-            href={addHref}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px]",
-              pathname.startsWith("/add")
-                ? "bg-amber-100/70 text-amber-700"
-                : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
-            )}
-          >
-            <Plus className="size-5" />
-            <span className="hidden sm:inline">Add</span>
-          </Link>
-        </nav>
+            <Link
+              href={addHref}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px]",
+                pathname.startsWith("/add")
+                  ? "bg-amber-100/70 text-amber-700"
+                  : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
+              )}
+            >
+              <Plus className="size-5" />
+              <span className="hidden sm:inline">Add</span>
+            </Link>
+
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px] text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
+              title="Sign out"
+            >
+              <LogOut className="size-5" />
+            </button>
+          </nav>
+        ) : null}
       </div>
     </header>
   );

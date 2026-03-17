@@ -62,14 +62,50 @@ export function useMealHistory(year: number, month: number) {
   });
 }
 
+export function useRecipeCooked() {
+  return useQuery({ queryKey: ["recipe-cooked"], queryFn: api.getRecipeCooked });
+}
+
+export function useRecipeHistory(id: string) {
+  return useQuery({
+    queryKey: ["recipe-history", id],
+    queryFn: () => api.getRecipeHistory(id),
+    enabled: !!id,
+  });
+}
+
 export function useSetMealHistory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ date, recipeId, restaurantId }: { date: string; recipeId: string | null; restaurantId?: string | null }) =>
       api.setMealHistory(date, recipeId, restaurantId),
-    onSuccess: () => {
+    onMutate: async ({ date, recipeId, restaurantId }) => {
+      // Optimistically update all cached mealhistory queries that contain this date
+      const [year, month] = date.split("-").map(Number);
+      const queryKey = ["mealhistory", year, month];
+      await qc.cancelQueries({ queryKey });
+      const previous = qc.getQueryData<Record<string, { recipeId: string; restaurantId?: string }>>(queryKey);
+      if (previous) {
+        const updated = { ...previous };
+        if (recipeId === null) {
+          delete updated[date];
+        } else {
+          updated[date] = { recipeId, ...(restaurantId ? { restaurantId } : {}) };
+        }
+        qc.setQueryData(queryKey, updated);
+      }
+      return { previous, queryKey };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        qc.setQueryData(context.queryKey, context.previous);
+      }
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["mealhistory"] });
       qc.invalidateQueries({ queryKey: ["restaurant-visits"] });
+      qc.invalidateQueries({ queryKey: ["recipe-history"] });
+      qc.invalidateQueries({ queryKey: ["recipe-cooked"] });
     },
   });
 }

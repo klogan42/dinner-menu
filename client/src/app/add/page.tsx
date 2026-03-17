@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { UtensilsCrossed, Store } from "lucide-react";
 import { RecipeForm } from "@/components/recipe-form";
@@ -9,7 +9,7 @@ import { theme } from "@/lib/styles";
 
 type Tab = "recipe" | "restaurant";
 
-export default function AddPage() {
+function AddPageContent() {
   const searchParams = useSearchParams();
   const initial = searchParams.get("type") === "restaurant" ? "restaurant" : "recipe";
   const [tab, setTab] = useState<Tab>(initial);
@@ -49,5 +49,13 @@ export default function AddPage() {
 
       {tab === "recipe" ? <RecipeForm /> : <RestaurantForm />}
     </div>
+  );
+}
+
+export default function AddPage() {
+  return (
+    <Suspense>
+      <AddPageContent />
+    </Suspense>
   );
 }
