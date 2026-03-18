@@ -66,7 +66,7 @@ export function PlannerContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data: recipes } = useRecipes();
+  const { data: recipes, isLoading: recipesLoading } = useRecipes();
   const { data: cooked = {} } = useRecipeCooked();
   const { past: pastDays, current: currentDays } = getWeekDays();
 
@@ -161,6 +161,8 @@ export function PlannerContent() {
 
   return (
     <div className="w-full min-w-0">
+      {recipesLoading && <div className={theme.empty}>Loading...</div>}
+      {!recipesLoading && <>
       <h1 className={`${theme.heading} mb-4`}>What&apos;s for Dinner?</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -366,6 +368,7 @@ export function PlannerContent() {
           </div>
         </DialogContent>
       </Dialog>
+      </>}
     </div>
   );
 }
