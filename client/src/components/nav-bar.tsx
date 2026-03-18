@@ -77,7 +77,14 @@ export function NavBar() {
               <LogOut className="size-5" />
             </button>
           </nav>
-        ) : null}
+        ) : (
+          <Link
+            href="/signin"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-display bg-amber-500 hover:bg-amber-600 text-white transition-colors min-h-[44px]"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </header>
   );
