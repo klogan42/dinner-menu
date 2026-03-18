@@ -106,7 +106,7 @@ export default function RecipeDetailPage({
       </div>
 
       {/* Time + servings */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-base sm:text-sm text-amber-800/70 mb-6">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 font-display text-base sm:text-sm text-amber-800/70 mb-6">
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Prep: {recipe.prepTimeMinutes}m</span>
         <span className="flex items-center gap-1"><Clock className="size-3.5" /> Cook: {recipe.cookTimeMinutes}m</span>
         <span className="font-display text-amber-700">Total: {totalTime}m</span>

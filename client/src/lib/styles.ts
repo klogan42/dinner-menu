@@ -24,8 +24,8 @@ export const theme = {
   tagActive: "bg-amber-500 text-white rounded-full",
 
   // Muted helper text
-  muted: "text-amber-700/60",
+  muted: "font-display text-amber-700/60",
 
   // Empty/loading states
-  empty: "text-center py-12 text-amber-700/50",
+  empty: "font-display text-center py-12 text-amber-700/50",
 } as const;

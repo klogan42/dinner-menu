@@ -105,7 +105,7 @@ export default function RestaurantDetailPage({
               <CardTitle className={`${theme.cardTitle} text-base`}>Notes</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-base text-amber-900 whitespace-pre-wrap">{restaurant.notes}</p>
+              <p className="text-base font-display text-amber-900 whitespace-pre-wrap">{restaurant.notes}</p>
             </CardContent>
           </Card>
         )}

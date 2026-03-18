@@ -55,7 +55,7 @@ export function SignInPage() {
             <UtensilsCrossed className="size-7 text-amber-600" />
             <h1 className="text-3xl font-display text-amber-900">Dinner Table</h1>
           </div>
-          <p className="text-sm text-amber-600/60">Plan your family dinners</p>
+          <p className="text-sm font-display text-amber-600/60">Plan your family dinners</p>
         </div>
 
         {/* Google */}
@@ -74,7 +74,7 @@ export function SignInPage() {
 
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-1 border-t border-amber-200/60" />
-          <span className="text-xs text-amber-600/40">or</span>
+          <span className="text-xs font-display text-amber-600/40">or</span>
           <div className="flex-1 border-t border-amber-200/60" />
         </div>
 
@@ -121,7 +121,7 @@ export function SignInPage() {
             minLength={8}
             className="w-full px-4 py-3 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400 font-display text-amber-900 placeholder:text-amber-400/60"
           />
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && <p className="font-display text-red-500 text-sm text-center">{error}</p>}
           <button
             type="submit"
             disabled={loading}

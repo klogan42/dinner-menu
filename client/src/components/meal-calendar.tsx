@@ -204,7 +204,7 @@ export function MealCalendar() {
         </button>
       ))}
       {filteredRecipes?.length === 0 && (
-        <div className="px-3 py-2 text-sm text-amber-600/50">No recipes found</div>
+        <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
       )}
     </div>
   );
@@ -243,7 +243,7 @@ export function MealCalendar() {
           </button>
         ))}
         {filteredRestaurants?.length === 0 && (
-          <div className="px-3 py-2 text-sm text-amber-600/50">No restaurants found</div>
+          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No restaurants found</div>
         )}
       </div>
     );
@@ -321,7 +321,7 @@ export function MealCalendar() {
                       <div className={`text-lg font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
                         {date.getDate()}
                       </div>
-                      <div className={`text-[11px] leading-tight ${isToday ? "text-amber-500" : "text-amber-600/40"}`}>
+                      <div className={`text-[11px] font-display leading-tight ${isToday ? "text-amber-500" : "text-amber-600/40"}`}>
                         {DAY_NAMES_SHORT[date.getDay()]}
                       </div>
                     </div>

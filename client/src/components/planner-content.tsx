@@ -247,7 +247,7 @@ export function PlannerContent() {
                           </button>
                         ))}
                         {filteredRestaurants?.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-amber-600/50">No restaurants found</div>
+                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No restaurants found</div>
                         )}
                       </div>
                     )}
@@ -275,7 +275,7 @@ export function PlannerContent() {
                           </button>
                         ))}
                         {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-amber-600/50">No recipes found</div>
+                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
                         )}
                       </div>
                     )}
@@ -325,7 +325,7 @@ export function PlannerContent() {
                           </button>
                         ))}
                         {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm text-amber-600/50">No recipes found</div>
+                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
                         )}
                       </div>
                     )}
