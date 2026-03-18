@@ -10,6 +10,7 @@ import { theme } from "@/lib/styles";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr + "T00:00").toLocaleDateString("en-US", {
+    weekday: "short",
     month: "short",
     day: "numeric",
   });
@@ -63,7 +64,7 @@ export function RecipeCard({ recipe, cookedDates }: { recipe: Recipe; cookedDate
         {recentDates.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {recentDates.map((date) => (
-              <span key={date} className="text-xs text-amber-700/60 bg-amber-100/50 px-2 py-0.5 rounded-md font-display">
+              <span key={date} className="text-xs text-amber-700 bg-amber-100/50 px-2 py-0.5 rounded-md font-display">
                 {formatDate(date)}
               </span>
             ))}
