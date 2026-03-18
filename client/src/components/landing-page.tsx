@@ -37,7 +37,7 @@ const features = [
   {
     icon: ShieldCheck,
     title: "No Tracking, No Ads",
-    description: "We don't track you, sell your data, or show ads. Your recipes and meal plans stay between you and your family.",
+    description: "We don't track you, sell your data, or show ads.",
   },
 ];
 
