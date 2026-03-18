@@ -264,7 +264,7 @@ export function MealCalendar() {
                                 className="flex items-center gap-1.5 mt-1 text-left"
                               >
                                 <Store className="size-3.5 text-amber-600" />
-                                <span className={`text-sm font-display transition-colors ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                                <span className={`text-sm font-display transition-colors ${restaurantName ? "text-amber-800 font-bold" : "text-amber-800"}`}>
                                   {restaurantName ?? "Pick a spot..."}
                                 </span>
                               </button>
@@ -440,7 +440,7 @@ export function MealCalendar() {
                     </div>
                   )}
                   {recipeId && isEatOutRecipe(recipeId) && (
-                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-800"}`}>
                       {restaurantName ?? "Pick a spot..."}
                     </div>
                   )}
