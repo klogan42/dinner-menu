@@ -194,8 +194,8 @@ export function PlannerContent() {
 
           <div className="grid gap-2">
 
-        {/* Earlier this week — collapsible */}
-        {pastDays.length > 0 && (
+        {/* Earlier this week — collapsible, only if past days have meals */}
+        {pastDays.length > 0 && pastDays.some(({ dateKey }) => history[dateKey]?.recipeId) && (
           <>
             <button
               onClick={() => setShowPast(!showPast)}
@@ -203,16 +203,9 @@ export function PlannerContent() {
             >
               {showPast ? <ChevronDown className="size-4 text-amber-600 shrink-0" /> : <ChevronRight className="size-4 text-amber-600 shrink-0" />}
               <span className="text-sm font-display text-amber-700">Earlier this week</span>
-              <div className="flex flex-wrap gap-1 ml-1">
-                {pastDays.map(({ dateKey, day }) => {
-                  const r = getRecipe(history[dateKey]?.recipeId ?? null);
-                  return (
-                    <span key={dateKey} className="text-xs font-display text-amber-600">
-                      {SHORT_DAYS[day]}{r ? ` · ${r.title.split(" ").slice(0, 2).join(" ")}` : ""}
-                    </span>
-                  );
-                }).reduce<React.ReactNode[]>((acc, el, i) => i === 0 ? [el] : [...acc, <span key={`sep-${i}`} className="text-amber-500">·</span>, el], [])}
-              </div>
+              <span className="text-xs font-display text-amber-600 ml-auto">
+                {pastDays.filter(({ dateKey }) => history[dateKey]?.recipeId).length} {pastDays.filter(({ dateKey }) => history[dateKey]?.recipeId).length === 1 ? "meal" : "meals"}
+              </span>
             </button>
 
             {showPast && pastDays.map(({ day, date, dateKey }) => {
