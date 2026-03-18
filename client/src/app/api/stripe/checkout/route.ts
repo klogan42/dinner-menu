@@ -35,7 +35,7 @@ export async function POST() {
       customer: customerId,
       mode: "payment",
       line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
-      success_url: `${appUrl}/?paid=1`,
+      success_url: `${appUrl}/subscribe?paid=1`,
       cancel_url: `${appUrl}/subscribe`,
       metadata: { userId: auth.userId },
     });

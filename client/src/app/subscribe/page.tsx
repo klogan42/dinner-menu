@@ -1,17 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UtensilsCrossed } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SubscribePage() {
   const { data: session, update } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoError, setPromoError] = useState("");
   const [showPromo, setShowPromo] = useState(false);
+  const [waitingForPayment, setWaitingForPayment] = useState(false);
+
+  // After Stripe checkout redirect, poll until webhook sets status to "active"
+  useEffect(() => {
+    if (searchParams.get("paid") !== "1") return;
+    setWaitingForPayment(true);
+    let attempts = 0;
+    const poll = setInterval(async () => {
+      attempts++;
+      await update();
+      // The subscribe layout will redirect to / once DB shows access
+      // Force a hard reload to trigger the server-side check
+      if (attempts >= 8) {
+        clearInterval(poll);
+        window.location.href = "/";
+      }
+    }, 2000);
+    return () => clearInterval(poll);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -63,6 +84,14 @@ export default function SubscribePage() {
           <h1 className="text-3xl font-display text-amber-900">Dinner Table</h1>
         </div>
 
+        {waitingForPayment && (
+          <div className="font-display text-amber-700 mb-6 text-lg">
+            Processing your payment...
+          </div>
+        )}
+
+        {!waitingForPayment && (
+        <>
         <p className="font-display text-amber-700/70 mb-2">
           Your free trial ended{trialEnd ? ` on ${trialEnd}` : ""}.
         </p>
@@ -120,6 +149,8 @@ export default function SubscribePage() {
         <p className="text-sm font-display text-amber-700">
           Secure payment via Stripe
         </p>
+        </>
+        )}
       </div>
     </div>
   );

@@ -60,7 +60,7 @@ export function PlannerContent() {
   useEffect(() => {
     if (searchParams.get("paid") === "1") {
       update().then(() => {
-        router.replace("/");
+        window.location.href = "/";
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
