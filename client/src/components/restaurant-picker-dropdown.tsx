@@ -48,9 +48,12 @@ export function RestaurantPickerDropdown({ restaurants, onSelect, onClose }: Res
         </button>
       ))}
       {filtered.length === 0 && restaurants.length === 0 && (
-        <Link href="/add?type=restaurant" className="flex items-center gap-1.5 px-3 py-3 text-sm font-display text-amber-600 hover:bg-amber-100/50 min-h-[44px] transition-colors">
+        <button
+          onClick={() => { onClose(); window.location.href = "/add?type=restaurant"; }}
+          className="w-full flex items-center gap-1.5 px-3 py-3 text-sm font-display text-amber-600 hover:bg-amber-100/50 min-h-[44px] transition-colors"
+        >
           <Plus className="size-4" /> Add your first spot
-        </Link>
+        </button>
       )}
       {filtered.length === 0 && restaurants.length > 0 && (
         <div className="px-3 py-2 text-sm font-display text-amber-600/50">No restaurants found</div>

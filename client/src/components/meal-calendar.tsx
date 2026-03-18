@@ -258,13 +258,15 @@ export function MealCalendar() {
                             <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                               {recipeName}
                             </span>
-                            {restaurantName && (
+                            {isEatOutRecipe(recipeId!) && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); }}
                                 className="flex items-center gap-1.5 mt-1 text-left"
                               >
                                 <Store className="size-3.5 text-amber-600" />
-                                <span className="text-sm font-display text-amber-800 font-bold transition-colors">{restaurantName}</span>
+                                <span className={`text-sm font-display transition-colors ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                                  {restaurantName ?? "Pick a spot..."}
+                                </span>
                               </button>
                             )}
                           </div>
@@ -377,11 +379,11 @@ export function MealCalendar() {
                         {recipeName}
                       </div>
                     )}
-                    {restaurantName && (
+                    {recipeId && isEatOutRecipe(recipeId) && (
                       <div className="flex items-center gap-1 mt-0.5">
                         <Store className="size-3 text-amber-600" />
-                        <span className="text-xs line-clamp-1 font-display text-amber-800 font-bold">
-                          {restaurantName}
+                        <span className={`text-xs line-clamp-1 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                          {restaurantName ?? "Pick a spot..."}
                         </span>
                       </div>
                     )}
@@ -437,9 +439,9 @@ export function MealCalendar() {
                       {recipeName}
                     </div>
                   )}
-                  {restaurantName && (
-                    <div className="text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display text-amber-800 font-bold">
-                      {restaurantName}
+                  {recipeId && isEatOutRecipe(recipeId) && (
+                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-400"}`}>
+                      {restaurantName ?? "Pick a spot..."}
                     </div>
                   )}
                 </div>
