@@ -74,35 +74,47 @@ export function useRecipeHistory(id: string) {
   });
 }
 
+function updateMealCache(
+  qc: ReturnType<typeof useQueryClient>,
+  date: string,
+  recipeId: string | null,
+  restaurantId?: string | null
+) {
+  const [year, month] = date.split("-").map(Number);
+  const queryKey = ["mealhistory", year, month];
+  const current = qc.getQueryData<Record<string, { recipeId: string; restaurantId?: string }>>(queryKey);
+  if (current === undefined) return { queryKey, previous: undefined };
+  const updated = { ...current };
+  if (recipeId === null) {
+    delete updated[date];
+  } else {
+    updated[date] = { recipeId, ...(restaurantId ? { restaurantId } : {}) };
+  }
+  qc.setQueryData(queryKey, updated);
+  return { queryKey, previous: current };
+}
+
 export function useSetMealHistory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ date, recipeId, restaurantId }: { date: string; recipeId: string | null; restaurantId?: string | null }) =>
       api.setMealHistory(date, recipeId, restaurantId),
     onMutate: async ({ date, recipeId, restaurantId }) => {
-      // Optimistically update all cached mealhistory queries that contain this date
       const [year, month] = date.split("-").map(Number);
-      const queryKey = ["mealhistory", year, month];
-      await qc.cancelQueries({ queryKey });
-      const previous = qc.getQueryData<Record<string, { recipeId: string; restaurantId?: string }>>(queryKey);
-      if (previous) {
-        const updated = { ...previous };
-        if (recipeId === null) {
-          delete updated[date];
-        } else {
-          updated[date] = { recipeId, ...(restaurantId ? { restaurantId } : {}) };
-        }
-        qc.setQueryData(queryKey, updated);
-      }
-      return { previous, queryKey };
+      await qc.cancelQueries({ queryKey: ["mealhistory", year, month] });
+      return updateMealCache(qc, date, recipeId, restaurantId);
+    },
+    onSuccess: (_data, { date, recipeId, restaurantId }) => {
+      // Confirm the cache update on success — prevents a stale refetch from reverting the change
+      updateMealCache(qc, date, recipeId, restaurantId);
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
+      if (context?.previous !== undefined) {
         qc.setQueryData(context.queryKey, context.previous);
       }
     },
     onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["mealhistory"] });
+      // Don't invalidate mealhistory — we manage it directly to avoid race conditions
       qc.invalidateQueries({ queryKey: ["restaurant-visits"] });
       qc.invalidateQueries({ queryKey: ["recipe-history"] });
       qc.invalidateQueries({ queryKey: ["recipe-cooked"] });
