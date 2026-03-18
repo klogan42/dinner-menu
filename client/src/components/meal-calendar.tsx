@@ -54,6 +54,7 @@ export function MealCalendar() {
   const [search, setSearch] = useState("");
   const [restaurantPickerDate, setRestaurantPickerDate] = useState<string | null>(null);
   const [restaurantSearch, setRestaurantSearch] = useState("");
+  const [showPastDays, setShowPastDays] = useState(false);
 
   const windowStart = useMemo(() => {
     const start = new Date(now);
@@ -292,95 +293,113 @@ export function MealCalendar() {
         <>
           {/* MOBILE: list layout with inline picker */}
           <div className="sm:hidden space-y-1.5">
-            {twoWeekDays.map((date) => {
-              const key = toDateKey(date);
-              const isToday = key === todayKey;
-              const isPast = key < todayKey;
-              const entry = history[key];
-              const recipeId = entry?.recipeId;
-              const restaurantId = entry?.restaurantId;
-              const recipeName = recipeId ? getRecipeName(recipeId) : undefined;
-              const restaurantName = restaurantId ? getRestaurantName(restaurantId) : undefined;
-              const isEatOut = recipeId ? isEatOutRecipe(recipeId) : false;
-              const isSelected = key === selectedDate;
+            {(() => {
+              const pastDates = weekOffset === 0 ? twoWeekDays.filter(d => toDateKey(d) < todayKey) : [];
+              const upcomingDates = weekOffset === 0 ? twoWeekDays.filter(d => toDateKey(d) >= todayKey) : twoWeekDays;
 
-              return (
-                <div key={key}>
-                  <div
-                    onClick={() => { setSelectedDate(isSelected ? null : key); setSearch(""); }}
-                    className={`
-                      flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-colors min-h-[52px] shadow-sm
-                      ${isSelected ? "border-amber-400 bg-white ring-1 ring-amber-400/30" : ""}
-                      ${isToday && !isSelected ? "border-amber-400/60 bg-white shadow-amber-200/50" : ""}
-                      ${!isToday && !isSelected ? "border-amber-300/60 bg-white hover:shadow-md" : ""}
-                      ${isPast && !isToday && !isSelected ? "opacity-50" : ""}
-                    `}
-                  >
-                    {/* Date column */}
-                    <div className="w-12 shrink-0 text-center">
-                      <div className={`text-lg font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
-                        {date.getDate()}
-                      </div>
-                      <div className={`text-[11px] font-display leading-tight ${isToday ? "text-amber-500" : "text-amber-600/40"}`}>
-                        {DAY_NAMES_SHORT[date.getDay()]}
-                      </div>
-                    </div>
+              const renderDayRow = (date: Date, forceReadOnly = false) => {
+                const key = toDateKey(date);
+                const isToday = key === todayKey;
+                const isPast = key < todayKey;
+                const entry = history[key];
+                const recipeId = entry?.recipeId;
+                const restaurantId = entry?.restaurantId;
+                const recipeName = recipeId ? getRecipeName(recipeId) : undefined;
+                const restaurantName = restaurantId ? getRestaurantName(restaurantId) : undefined;
+                const isEatOut = recipeId ? isEatOutRecipe(recipeId) : false;
+                const isSelected = key === selectedDate;
 
-                    {/* Recipe name */}
-                    <div className="flex-1 min-w-0">
-                      {recipeName ? (
-                        <div>
-                          <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
-                            {recipeName}
-                          </span>
-                          {restaurantName && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
-                              className="flex items-center gap-1.5 mt-1 text-left"
-                            >
-                              <Store className="size-3.5 text-amber-600" />
-                              <span className="text-sm font-display text-amber-800 font-bold transition-colors">
-                                {restaurantName}
-                              </span>
-                            </button>
-                          )}
+                return (
+                  <div key={key}>
+                    <div
+                      onClick={() => { setSelectedDate(isSelected ? null : key); setSearch(""); }}
+                      className={`
+                        flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-colors min-h-[52px] shadow-sm
+                        ${isSelected ? "border-amber-400 bg-white ring-1 ring-amber-400/30" : ""}
+                        ${isToday && !isSelected ? "border-amber-400/60 bg-white shadow-amber-200/50" : ""}
+                        ${!isToday && !isSelected ? "border-amber-300/60 bg-white hover:shadow-md" : ""}
+                        ${isPast && !isToday && !isSelected ? "opacity-50" : ""}
+                      `}
+                    >
+                      <div className="w-12 shrink-0 text-center">
+                        <div className={`text-lg font-display leading-tight ${isToday ? "text-amber-600" : "text-amber-800/60"}`}>
+                          {date.getDate()}
                         </div>
-                      ) : restaurantName ? (
-                        <div>
+                        <div className={`text-[11px] font-display leading-tight ${isToday ? "text-amber-500" : "text-amber-600/40"}`}>
+                          {DAY_NAMES_SHORT[date.getDay()]}
+                        </div>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        {recipeName ? (
+                          <div>
+                            <span className={`text-base font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                              {recipeName}
+                            </span>
+                            {restaurantName && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
+                                className="flex items-center gap-1.5 mt-1 text-left"
+                              >
+                                <Store className="size-3.5 text-amber-600" />
+                                <span className="text-sm font-display text-amber-800 font-bold transition-colors">{restaurantName}</span>
+                              </button>
+                            )}
+                          </div>
+                        ) : restaurantName ? (
                           <button
                             onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
                             className="flex items-center gap-1.5 text-left"
                           >
                             <Store className="size-3.5 text-amber-600" />
-                            <span className="text-sm font-display text-amber-800 font-bold">
-                              {restaurantName}
-                            </span>
+                            <span className="text-sm font-display text-amber-800 font-bold">{restaurantName}</span>
                           </button>
-                        </div>
-                      ) : (
-                        <span className="text-sm font-display text-amber-400">
-                          {isPast ? "—" : "Tap to add..."}
-                        </span>
+                        ) : (
+                          <span className="text-sm font-display text-amber-400">
+                            {isPast ? "—" : "Tap to add..."}
+                          </span>
+                        )}
+                      </div>
+
+                      {recipeName && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); clearMeal(key); }}
+                          className="text-amber-300 hover:text-red-400 p-2 -mr-1 transition-colors shrink-0"
+                        >
+                          <X className="size-4" />
+                        </button>
                       )}
                     </div>
 
-                    {/* Clear button */}
-                    {recipeName && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); clearMeal(key); }}
-                        className="text-amber-300 hover:text-red-400 p-2 -mr-1 transition-colors shrink-0"
-                      >
-                        <X className="size-4" />
-                      </button>
-                    )}
+                    {isSelected && recipePicker}
+                    {restaurantPicker(key)}
                   </div>
+                );
+              };
 
-                  {/* Inline recipe picker for this day */}
-                  {isSelected && recipePicker}
-                  {restaurantPicker(key)}
-                </div>
+              return (
+                <>
+                  {pastDates.length > 0 && (
+                    <>
+                      <button
+                        onClick={() => setShowPastDays(!showPastDays)}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-amber-200/60 bg-amber-50/50 hover:bg-amber-100/40 transition-colors min-h-[44px]"
+                      >
+                        {showPastDays
+                          ? <ChevronLeft className="size-4 text-amber-600 -rotate-90 shrink-0" />
+                          : <ChevronRight className="size-4 text-amber-600 shrink-0" />}
+                        <span className="text-sm font-display text-amber-700">Earlier this week</span>
+                        <span className="text-xs font-display text-amber-600 ml-auto">
+                          {pastDates.length} {pastDates.length === 1 ? "day" : "days"}
+                        </span>
+                      </button>
+                      {showPastDays && pastDates.map(d => renderDayRow(d))}
+                    </>
+                  )}
+                  {upcomingDates.map(d => renderDayRow(d))}
+                </>
               );
-            })}
+            })()}
           </div>
 
           {/* DESKTOP: 7-column grid */}

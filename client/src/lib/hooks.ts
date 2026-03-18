@@ -59,6 +59,7 @@ export function useMealHistory(year: number, month: number) {
   return useQuery({
     queryKey: ["mealhistory", year, month],
     queryFn: () => api.getMealHistory(year, month),
+    staleTime: 30_000, // reduce background refetch races with optimistic updates
   });
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, RefreshCw, Dices, Store, X } from "lucide-react";
+import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -24,17 +24,29 @@ function toDateKey(date: Date) {
   return `${y}-${m}-${d}`;
 }
 
-function getOrderedDays() {
+function getWeekDays() {
   const today = new Date();
-  const todayIndex = today.getDay();
-  const ordered: { day: (typeof DAYS)[number]; date: Date; dateKey: string; isToday: boolean }[] = [];
-  for (let i = 0; i < 7; i++) {
-    const offset = (todayIndex + i) % 7;
+  today.setHours(0, 0, 0, 0);
+  const todayKey = toDateKey(today);
+
+  // Past days: start of this calendar week (Sunday) up to yesterday
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay()); // Sunday
+  const past: { day: (typeof DAYS)[number]; date: Date; dateKey: string; isToday: boolean; isPast: boolean }[] = [];
+  for (let d = new Date(weekStart); d < today; d.setDate(d.getDate() + 1)) {
+    const date = new Date(d);
+    past.push({ day: DAYS[date.getDay()], date, dateKey: toDateKey(date), isToday: false, isPast: true });
+  }
+
+  // Current days: today + next 6 days (always 7 forward-looking days)
+  const current = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    ordered.push({ day: DAYS[offset], date, dateKey: toDateKey(date), isToday: i === 0 });
-  }
-  return ordered;
+    const dateKey = toDateKey(date);
+    return { day: DAYS[date.getDay()], date, dateKey, isToday: dateKey === todayKey, isPast: false };
+  });
+
+  return { past, current };
 }
 
 function formatDate(date: Date) {
@@ -43,18 +55,23 @@ function formatDate(date: Date) {
 
 export function PlannerContent() {
   const { data: recipes } = useRecipes();
+  const { past: pastDays, current: currentDays } = getWeekDays();
+
+  // Fetch months needed to cover all visible days
   const now = new Date();
-  const { data: historyThisMonth = {} } = useMealHistory(now.getFullYear(), now.getMonth() + 1);
-  // If the week spans two months, also fetch next month
-  const lastDay = getOrderedDays()[6]?.date;
-  const needsNextMonth = lastDay && lastDay.getMonth() !== now.getMonth();
-  const nextMonth = now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2;
-  const nextMonthYear = now.getMonth() + 2 > 12 ? now.getFullYear() + 1 : now.getFullYear();
-  const { data: historyNextMonth = {} } = useMealHistory(nextMonthYear, nextMonth);
-  const history = needsNextMonth ? { ...historyThisMonth, ...historyNextMonth } : historyThisMonth;
+  const allDates = [...pastDays, ...currentDays];
+  const firstDate = allDates[0]?.date ?? now;
+  const lastDate = allDates[allDates.length - 1]?.date ?? now;
+  const m1 = { year: firstDate.getFullYear(), month: firstDate.getMonth() + 1 };
+  const m2 = { year: lastDate.getFullYear(), month: lastDate.getMonth() + 1 };
+  const m2Needed = m1.year !== m2.year || m1.month !== m2.month;
+  const { data: history1 = {} } = useMealHistory(m1.year, m1.month);
+  const { data: history2 = {} } = useMealHistory(m2Needed ? m2.year : m1.year, m2Needed ? m2.month : m1.month);
+  const history = m2Needed ? { ...history1, ...history2 } : history1;
 
   const { data: restaurants } = useRestaurants();
   const setMealHistory = useSetMealHistory();
+  const [showPast, setShowPast] = useState(false);
   const [openDay, setOpenDay] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [shoppingList, setShoppingList] = useState("");
@@ -87,10 +104,9 @@ export function PlannerContent() {
 
   const randomizeWeek = async () => {
     const random = await api.getRandomRecipes();
-    const days = getOrderedDays();
-    for (let i = 0; i < days.length; i++) {
+    for (let i = 0; i < currentDays.length; i++) {
       const recipeId = random[i]?.id ?? null;
-      setMealHistory.mutate({ date: days[i].dateKey, recipeId });
+      setMealHistory.mutate({ date: currentDays[i].dateKey, recipeId });
     }
   };
 
@@ -101,8 +117,7 @@ export function PlannerContent() {
   };
 
   const clearWeek = () => {
-    const days = getOrderedDays();
-    for (const d of days) {
+    for (const d of currentDays) {
       setMealHistory.mutate({ date: d.dateKey, recipeId: null });
     }
   };
@@ -112,8 +127,7 @@ export function PlannerContent() {
 
   const generateShoppingList = () => {
     const map = new Map<string, { amount: string; unit: string }[]>();
-    const days = getOrderedDays();
-    days.forEach(({ dateKey }) => {
+    currentDays.forEach(({ dateKey }) => {
       const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
       recipe?.ingredients.forEach((ing) => {
         const key = ing.name.toLowerCase();
@@ -141,8 +155,8 @@ export function PlannerContent() {
       <h1 className={`${theme.heading} mb-4`}>What&apos;s for Dinner?</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Calendar — left side on desktop, top on mobile */}
-        <div className="lg:w-[65%]">
+        {/* Calendar — left on desktop, below planner on mobile */}
+        <div className="lg:w-[65%] order-2 lg:order-1">
           <Card className={theme.card}>
             <CardContent className="p-3 sm:p-4">
               <MealCalendar />
@@ -150,8 +164,8 @@ export function PlannerContent() {
           </Card>
         </div>
 
-        {/* Planner — right side on desktop, below calendar on mobile */}
-        <div className="lg:w-[35%] min-w-0">
+        {/* Planner — right on desktop, top on mobile */}
+        <div className="lg:w-[35%] min-w-0 order-1 lg:order-2">
           <div className="flex gap-2 mb-3">
             <Button onClick={randomizeWeek} className={`${theme.buttonPrimary} min-h-[44px]`}>
               <Shuffle className="size-4" /> <span className="hidden sm:inline">Randomize</span>
@@ -165,7 +179,59 @@ export function PlannerContent() {
           </div>
 
           <div className="grid gap-2">
-        {getOrderedDays().map(({ day, date, dateKey, isToday }) => {
+
+        {/* Earlier this week — collapsible */}
+        {pastDays.length > 0 && (
+          <>
+            <button
+              onClick={() => setShowPast(!showPast)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl border border-amber-200/60 bg-amber-50/50 hover:bg-amber-100/40 transition-colors min-h-[44px]"
+            >
+              {showPast ? <ChevronDown className="size-4 text-amber-600 shrink-0" /> : <ChevronRight className="size-4 text-amber-600 shrink-0" />}
+              <span className="text-sm font-display text-amber-700">Earlier this week</span>
+              <div className="flex flex-wrap gap-1 ml-1">
+                {pastDays.map(({ dateKey, day }) => {
+                  const r = getRecipe(history[dateKey]?.recipeId ?? null);
+                  return (
+                    <span key={dateKey} className="text-xs font-display text-amber-600">
+                      {SHORT_DAYS[day]}{r ? ` · ${r.title.split(" ").slice(0, 2).join(" ")}` : ""}
+                    </span>
+                  );
+                }).reduce<React.ReactNode[]>((acc, el, i) => i === 0 ? [el] : [...acc, <span key={`sep-${i}`} className="text-amber-500">·</span>, el], [])}
+              </div>
+            </button>
+
+            {showPast && pastDays.map(({ day, date, dateKey }) => {
+              const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
+              const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+              const restaurant = getRestaurant(history[dateKey]?.restaurantId);
+              return (
+                <Card key={dateKey} className={`${theme.card} opacity-60`} size="sm">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="font-display text-amber-900 text-sm">
+                        {SHORT_DAYS[day]}
+                        <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
+                      </span>
+                    </div>
+                    {recipe ? (
+                      <div className="flex items-center gap-1 mt-0.5 min-w-0">
+                        {isEatOut && <Store className="size-3.5 text-amber-600 shrink-0" />}
+                        <span className="text-sm font-display text-amber-700/70 truncate">
+                          {isEatOut && restaurant ? restaurant.name : recipe.title}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm font-display text-amber-400/60">—</span>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </>
+        )}
+
+        {currentDays.map(({ day, date, dateKey, isToday }) => {
           const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
           const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
           const restaurant = getRestaurant(history[dateKey]?.restaurantId);
@@ -177,7 +243,7 @@ export function PlannerContent() {
                     <div className="flex items-center justify-between gap-1 mb-0.5">
                       <span className="font-display text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
-                        <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
+                        <span className="font-normal text-amber-900 ml-1.5">{formatDate(date)}</span>
                       </span>
                       {!isEatOut && (
                         <span className="text-xs text-amber-600/40 flex items-center gap-1 shrink-0">
@@ -335,7 +401,7 @@ export function PlannerContent() {
             </Card>
           );
         })}
-          </div>
+        </div>
         </div>
       </div>
 

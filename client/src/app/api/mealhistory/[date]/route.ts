@@ -39,7 +39,8 @@ export async function PUT(
     }
 
     return new NextResponse(null, { status: 204 });
-  } catch {
+  } catch (err) {
+    console.error("PUT /api/mealhistory error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
