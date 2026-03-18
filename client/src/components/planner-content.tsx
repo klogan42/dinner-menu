@@ -223,13 +223,31 @@ export function PlannerContent() {
                     </div>
                     {recipe ? (
                       <div className="flex items-center gap-1 mt-0.5 min-w-0">
-                        {isEatOut && <Store className="size-3.5 text-amber-600 shrink-0" />}
-                        <span className="text-sm font-display text-amber-700/70 truncate">
-                          {isEatOut && restaurant ? restaurant.name : recipe.title}
-                        </span>
+                        {isEatOut ? (
+                          <>
+                            <Store className="size-3.5 text-amber-600 shrink-0" />
+                            <button
+                              onClick={() => setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey)}
+                              className="text-sm font-display text-amber-700/70 hover:text-amber-600 truncate transition-colors"
+                            >
+                              {restaurant ? restaurant.name : "Pick a spot..."}
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-sm font-display text-amber-700/70 truncate">
+                            {recipe.title}
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <span className="text-sm font-display text-amber-400/60">—</span>
+                    )}
+                    {restaurantPickerDay === dateKey && restaurants && (
+                      <RestaurantPickerDropdown
+                        restaurants={restaurants}
+                        onSelect={(rid) => assignRestaurant(dateKey, rid)}
+                        onClose={() => setRestaurantPickerDay(null)}
+                      />
                     )}
                   </CardContent>
                 </Card>
