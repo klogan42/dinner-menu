@@ -251,11 +251,11 @@ export function MealCalendar() {
   return (
     <div className="w-full">
       {/* Nav */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-center gap-1 mb-3">
         <button onClick={prev} className="p-2 text-amber-400 hover:text-amber-600 min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors">
           <ChevronLeft className="size-5" />
         </button>
-        <div className="text-center">
+        <div className="text-center min-w-[160px]">
           <h2 className="text-sm font-display text-amber-900">{headerLabel}</h2>
           {showBackToToday && (
             <button onClick={goToday} className="text-xs font-display text-amber-500 hover:text-amber-600 mt-0.5 transition-colors">
