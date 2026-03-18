@@ -51,6 +51,9 @@ export function WelcomeCard() {
             <Sparkles className="size-4" /> {seeding ? "Adding..." : "Add Starter Recipes"}
           </Button>
         </div>
+        <p className="font-display text-xs text-amber-600/60 mt-4">
+          Check out the <Link href="/tips" className="text-amber-700 underline hover:text-amber-900">Tips page</Link> to learn how everything works.
+        </p>
       </CardContent>
     </Card>
   );
