@@ -7,12 +7,12 @@ const features = [
   {
     icon: CalendarDays,
     title: "Meal Planning",
-    description: "Plan your week at a glance with a two-week or monthly calendar view. Drag, swap, and shuffle meals with one tap.",
+    description: "Plan your week at a glance with a two-week or monthly calendar view. Assign, swap, and shuffle meals with one tap.",
   },
   {
     icon: BookOpen,
     title: "Recipe Library",
-    description: "Store all your family favourites with ingredients, steps, and tags. Filter by quick meals, crockpot, grill, and more.",
+    description: "Store all your family favorites with ingredients, steps, and tags. Filter by quick meals, crockpot, grill, and more.",
   },
   {
     icon: Store,
