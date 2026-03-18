@@ -228,7 +228,7 @@ export function PlannerContent() {
                             <Store className="size-3.5 text-amber-600 shrink-0" />
                             <button
                               onClick={() => setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey)}
-                              className="text-sm font-display text-amber-700/70 hover:text-amber-600 truncate transition-colors"
+                              className="text-sm font-display text-amber-800 hover:text-amber-600 truncate transition-colors"
                             >
                               {restaurant ? restaurant.name : "Pick a spot..."}
                             </button>
@@ -290,7 +290,7 @@ export function PlannerContent() {
                           ) : (
                             <button
                               onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); }}
-                              className="text-amber-400 hover:text-amber-600 font-display text-sm transition-colors"
+                              className="text-amber-800 hover:text-amber-600 font-display text-sm transition-colors"
                             >
                               Pick a spot...
                             </button>
