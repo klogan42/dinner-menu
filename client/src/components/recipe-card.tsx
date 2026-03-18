@@ -8,9 +8,17 @@ import { Recipe } from "@/lib/types";
 import { useToggleFavorite } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
 
-export function RecipeCard({ recipe }: { recipe: Recipe }) {
+function formatDate(dateStr: string) {
+  return new Date(dateStr + "T00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function RecipeCard({ recipe, cookedDates }: { recipe: Recipe; cookedDates?: string[] }) {
   const toggleFav = useToggleFavorite();
   const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
+  const recentDates = cookedDates?.slice(0, 5) ?? [];
 
   return (
     <Card className={`${theme.card} hover:shadow-md transition-shadow`}>
@@ -44,13 +52,23 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 mb-3">
           {recipe.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className={theme.tag}>
               {tag}
             </Badge>
           ))}
         </div>
+
+        {recentDates.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {recentDates.map((date) => (
+              <span key={date} className="text-xs text-amber-700/60 bg-amber-100/50 px-2 py-0.5 rounded-md font-display">
+                {formatDate(date)}
+              </span>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

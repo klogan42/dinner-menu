@@ -3,11 +3,11 @@
 import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Clock, Users, Star, Pencil, Trash2, ArrowLeft, CalendarPlus } from "lucide-react";
+import { Clock, Users, Star, Pencil, Trash2, ArrowLeft, CalendarPlus, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRecipe, useDeleteRecipe, useToggleFavorite, useMealHistory, useSetMealHistory } from "@/lib/hooks";
+import { useRecipe, useDeleteRecipe, useToggleFavorite, useMealHistory, useSetMealHistory, useRecipeHistory } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
 
 function toDateKey(date: Date) {
@@ -41,6 +41,7 @@ export default function RecipeDetailPage({
   const now = new Date();
   const { data: history = {} } = useMealHistory(now.getFullYear(), now.getMonth() + 1);
   const setMealHistory = useSetMealHistory();
+  const { data: recipeHistory } = useRecipeHistory(id);
 
   if (isLoading) return <div className={theme.empty}>Loading recipe...</div>;
   if (!recipe) return <div className={theme.empty}>Recipe not found.</div>;
@@ -145,6 +146,36 @@ export default function RecipeDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      {/* Cooking History */}
+      {recipeHistory && recipeHistory.length > 0 && (
+        <Card className={`${theme.card} mt-4 md:mt-6`}>
+          <CardHeader className="pb-2">
+            <CardTitle className={`${theme.cardTitle} text-base flex items-center gap-2`}>
+              <History className="size-4" /> History
+              <span className="text-sm font-normal text-amber-600/60">
+                ({recipeHistory.length} time{recipeHistory.length !== 1 ? "s" : ""})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {recipeHistory.map((entry) => (
+                <span
+                  key={entry.date}
+                  className="text-sm text-amber-800 bg-amber-100/60 px-2.5 py-1 rounded-lg font-display"
+                >
+                  {new Date(entry.date + "T00:00").toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
