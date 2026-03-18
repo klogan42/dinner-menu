@@ -12,7 +12,8 @@ export async function GET() {
     await connectDB();
     const recipes = await Recipe.find({ userId: auth.userId }).sort({ createdAt: -1 });
     return NextResponse.json(recipes);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/recipes error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
     }
     const recipe = await Recipe.create({ ...parsed.data, userId: auth.userId });
     return NextResponse.json(recipe, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("POST /api/recipes error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

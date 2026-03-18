@@ -3,17 +3,13 @@
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, X, CalendarDays, CalendarRange, Store } from "lucide-react";
 import { useMealHistory, useRecipes, useRestaurants, useSetMealHistory } from "@/lib/hooks";
+import { toDateKey } from "@/lib/utils";
+import { RecipePickerDropdown } from "@/components/recipe-picker-dropdown";
+import { RestaurantPickerDropdown } from "@/components/restaurant-picker-dropdown";
 
 const DAY_NAMES_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_NAMES_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DAY_LETTERS = ["S", "M", "T", "W", "T", "F", "S"];
-
-function toDateKey(date: Date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 function getWeekStart(date: Date) {
   const d = new Date(date);
@@ -51,9 +47,7 @@ export function MealCalendar() {
   const [monthYear, setMonthYear] = useState(now.getFullYear());
   const [monthMonth, setMonthMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
   const [restaurantPickerDate, setRestaurantPickerDate] = useState<string | null>(null);
-  const [restaurantSearch, setRestaurantSearch] = useState("");
   const [showPastDays, setShowPastDays] = useState(false);
 
   const windowStart = useMemo(() => {
@@ -95,10 +89,8 @@ export function MealCalendar() {
   const getRestaurantName = (restaurantId: string) =>
     restaurants?.find((r) => r.id === restaurantId)?.name;
 
-  // Check if a recipe is the "Eat Out" recipe
   const isEatOutRecipe = (recipeId: string) => {
-    const recipe = recipes?.find((r) => r.id === recipeId);
-    return recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+    return recipes?.find((r) => r.id === recipeId)?.isEatOut ?? false;
   };
 
   const prev = () => {
@@ -127,37 +119,27 @@ export function MealCalendar() {
   const assignMeal = (recipeId: string) => {
     if (!selectedDate) return;
     const recipe = recipes?.find((r) => r.id === recipeId);
-    const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+    const isEatOut = recipe?.isEatOut ?? false;
     setMealHistory.mutate({ date: selectedDate, recipeId });
     if (isEatOut && restaurants?.length) {
       setRestaurantPickerDate(selectedDate);
-      setRestaurantSearch("");
-    }
+          }
     setSelectedDate(null);
-    setSearch("");
-  };
+      };
 
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
-    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.tags.includes("eat out") || r.title.toLowerCase().includes("eat out"))?.id;
+    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.isEatOut)?.id;
     if (recipeId) {
       setMealHistory.mutate({ date: dateKey, recipeId, restaurantId });
     }
     setRestaurantPickerDate(null);
-    setRestaurantSearch("");
-  };
+      };
 
   const clearMeal = (dateKey: string) => {
     setMealHistory.mutate({ date: dateKey, recipeId: null });
   };
 
-  const filteredRecipes = recipes?.filter((r) =>
-    r.title.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const filteredRestaurants = restaurants?.filter((r) =>
-    r.name.toLowerCase().includes(restaurantSearch.toLowerCase())
-  );
 
   const headerLabel = view === "2week"
     ? (() => {
@@ -172,81 +154,21 @@ export function MealCalendar() {
 
   const showBackToToday = view === "2week" ? weekOffset !== 0 : (monthYear !== now.getFullYear() || monthMonth !== now.getMonth());
 
-  // Recipe picker (shared between views)
-  const recipePicker = selectedDate && (
-    <div className="mt-3 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
-      <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-sm font-display text-amber-800">
-            {new Date(selectedDate + "T00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-          </span>
-          <button onClick={() => { setSelectedDate(null); setSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
-            <X className="size-4" />
-          </button>
-        </div>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search recipes..."
-          className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-        />
-      </div>
-      {filteredRecipes?.map((r) => (
-        <button
-          key={r.id}
-          onClick={() => assignMeal(r.id)}
-          className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
-        >
-          {r.title}
-          <span className="text-xs text-amber-600/60 ml-2">
-            {r.prepTimeMinutes + r.cookTimeMinutes}m
-          </span>
-        </button>
-      ))}
-      {filteredRecipes?.length === 0 && (
-        <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
-      )}
-    </div>
+  const recipePicker = selectedDate && recipes && (
+    <RecipePickerDropdown
+      recipes={recipes}
+      onSelect={(rid) => assignMeal(rid)}
+      onClose={() => setSelectedDate(null)}
+    />
   );
 
-  // Restaurant picker — shows after selecting "Eat Out"
   const restaurantPicker = (dateKey: string) =>
-    restaurantPickerDate === dateKey && (
-      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
-        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-display text-amber-800 flex items-center gap-1">
-              <Store className="size-3.5" /> Pick a restaurant
-            </span>
-            <button onClick={() => { setRestaurantPickerDate(null); setRestaurantSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
-              <X className="size-4" />
-            </button>
-          </div>
-          <input
-            type="text"
-            value={restaurantSearch}
-            onChange={(e) => setRestaurantSearch(e.target.value)}
-            placeholder="Search restaurants..."
-            className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-          />
-        </div>
-        {filteredRestaurants?.map((r) => (
-          <button
-            key={r.id}
-            onClick={() => assignRestaurant(dateKey, r.id)}
-            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
-          >
-            {r.name}
-            {r.cuisine && (
-              <span className="text-xs text-amber-600/60 ml-2">{r.cuisine}</span>
-            )}
-          </button>
-        ))}
-        {filteredRestaurants?.length === 0 && (
-          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No restaurants found</div>
-        )}
-      </div>
+    restaurantPickerDate === dateKey && restaurants && (
+      <RestaurantPickerDropdown
+        restaurants={restaurants}
+        onSelect={(rid) => assignRestaurant(dateKey, rid)}
+        onClose={() => setRestaurantPickerDate(null)}
+      />
     );
 
   return (
@@ -312,7 +234,7 @@ export function MealCalendar() {
                 return (
                   <div key={key}>
                     <div
-                      onClick={() => { setSelectedDate(isSelected ? null : key); setSearch(""); }}
+                      onClick={() => setSelectedDate(isSelected ? null : key)}
                       className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-colors min-h-[52px] shadow-sm
                         ${isSelected ? "border-amber-400 bg-white ring-1 ring-amber-400/30" : ""}
@@ -338,7 +260,7 @@ export function MealCalendar() {
                             </span>
                             {restaurantName && (
                               <button
-                                onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
+                                onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); }}
                                 className="flex items-center gap-1.5 mt-1 text-left"
                               >
                                 <Store className="size-3.5 text-amber-600" />
@@ -348,7 +270,7 @@ export function MealCalendar() {
                           </div>
                         ) : restaurantName ? (
                           <button
-                            onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); setRestaurantSearch(""); }}
+                            onClick={(e) => { e.stopPropagation(); setRestaurantPickerDate(restaurantPickerDate === key ? null : key); }}
                             className="flex items-center gap-1.5 text-left"
                           >
                             <Store className="size-3.5 text-amber-600" />
@@ -427,7 +349,7 @@ export function MealCalendar() {
                 return (
                   <div
                     key={key}
-                    onClick={() => { setSelectedDate(isSelected ? null : key); setSearch(""); }}
+                    onClick={() => setSelectedDate(isSelected ? null : key)}
                     className={`
                       relative min-h-[5.5rem] p-2 rounded-xl border
                       cursor-pointer transition-colors hover:bg-amber-50/60
@@ -497,7 +419,7 @@ export function MealCalendar() {
               return (
                 <div
                   key={key}
-                  onClick={() => { setSelectedDate(isSelected ? null : key); setSearch(""); }}
+                  onClick={() => setSelectedDate(isSelected ? null : key)}
                   className={`
                     relative min-h-[3.25rem] sm:min-h-[4rem] p-1.5 rounded-md border
                     cursor-pointer transition-colors hover:bg-amber-50/60

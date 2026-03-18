@@ -18,7 +18,8 @@ export async function PATCH(
     recipe.isFavorite = !recipe.isFavorite;
     await recipe.save();
     return NextResponse.json(recipe);
-  } catch {
+  } catch (err) {
+    console.error("PATCH /api/recipes/[id]/favorite error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

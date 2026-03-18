@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Recipe } from "@/models/Recipe";
 import { MealHistory } from "@/models/MealHistory";
+import { toDateKey } from "@/lib/utils";
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-function toDateKey(date: Date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 // GET /api/planner/current-week — requires x-api-key header
 export async function GET(req: NextRequest) {
@@ -55,7 +49,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(week);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/planner/current-week error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

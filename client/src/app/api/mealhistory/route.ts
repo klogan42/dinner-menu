@@ -21,8 +21,9 @@ export async function GET(req: NextRequest) {
     }
 
     const { year, month } = parsed.data;
+    const lastDay = new Date(year, month, 0).getDate();
     const from = `${year}-${String(month).padStart(2, "0")}-01`;
-    const to = `${year}-${String(month).padStart(2, "0")}-31`;
+    const to = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
     const entries = await MealHistory.find({
       userId: auth.userId,
@@ -35,7 +36,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(result);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/mealhistory error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

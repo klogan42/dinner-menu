@@ -17,7 +17,8 @@ export async function GET(
     const restaurant = await Restaurant.findOne({ _id: id, userId: auth.userId });
     if (!restaurant) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(restaurant);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/restaurants/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -44,7 +45,8 @@ export async function PUT(
     );
     if (!restaurant) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(restaurant);
-  } catch {
+  } catch (err) {
+    console.error("PUT /api/restaurants/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -62,7 +64,8 @@ export async function DELETE(
     const deleted = await Restaurant.findOneAndDelete({ _id: id, userId: auth.userId });
     if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return new NextResponse(null, { status: 204 });
-  } catch {
+  } catch (err) {
+    console.error("DELETE /api/restaurants/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

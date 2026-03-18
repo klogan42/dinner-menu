@@ -12,7 +12,8 @@ export async function GET() {
     await connectDB();
     const restaurants = await Restaurant.find({ userId: auth.userId }).sort({ createdAt: -1 });
     return NextResponse.json(restaurants);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/restaurants error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
     }
     const restaurant = await Restaurant.create({ ...parsed.data, userId: auth.userId });
     return NextResponse.json(restaurant, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("POST /api/restaurants error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

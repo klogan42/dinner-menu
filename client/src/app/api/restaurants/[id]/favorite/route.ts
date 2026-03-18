@@ -18,7 +18,8 @@ export async function PATCH(
     restaurant.isFavorite = !restaurant.isFavorite;
     await restaurant.save();
     return NextResponse.json(restaurant);
-  } catch {
+  } catch (err) {
+    console.error("PATCH /api/restaurants/[id]/favorite error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -55,7 +55,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name" className="font-display">Name</Label>
             <Input
               id="name"
               value={name}
@@ -66,7 +66,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             />
           </div>
           <div>
-            <Label htmlFor="cuisine">Cuisine</Label>
+            <Label htmlFor="cuisine" className="font-display">Cuisine</Label>
             <Input
               id="cuisine"
               value={cuisine}
@@ -76,7 +76,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             />
           </div>
           <div>
-            <Label>Rating</Label>
+            <Label className="font-display">Rating</Label>
             <div className="flex items-center gap-1 mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -93,7 +93,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             </div>
           </div>
           <div>
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes" className="font-display">Notes</Label>
             <Textarea
               id="notes"
               value={notes}

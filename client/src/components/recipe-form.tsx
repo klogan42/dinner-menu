@@ -93,7 +93,7 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="font-display">Title</Label>
             <Input
               id="title"
               value={title}
@@ -104,7 +104,7 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
             />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="font-display">Description</Label>
             <Textarea
               id="description"
               value={description}
@@ -116,20 +116,20 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
-              <Label htmlFor="prepTime">Prep (min)</Label>
+              <Label htmlFor="prepTime" className="font-display">Prep (min)</Label>
               <Input id="prepTime" type="number" min={0} value={prepTime} onChange={(e) => setPrepTime(Number(e.target.value))} className={theme.input} />
             </div>
             <div>
-              <Label htmlFor="cookTime">Cook (min)</Label>
+              <Label htmlFor="cookTime" className="font-display">Cook (min)</Label>
               <Input id="cookTime" type="number" min={0} value={cookTime} onChange={(e) => setCookTime(Number(e.target.value))} className={theme.input} />
             </div>
             <div>
-              <Label htmlFor="servings">Servings</Label>
+              <Label htmlFor="servings" className="font-display">Servings</Label>
               <Input id="servings" type="number" min={1} value={servings} onChange={(e) => setServings(Number(e.target.value))} className={theme.input} />
             </div>
           </div>
           <div>
-            <Label>Tags</Label>
+            <Label className="font-display">Tags</Label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {tags.map((tag) => (
                 <Badge key={tag} className="bg-amber-100 text-amber-800 gap-1 px-2.5 py-1 text-sm">
@@ -160,19 +160,19 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
           {ingredients.map((ing, i) => (
             <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end border-b border-amber-100 pb-3 sm:border-0 sm:pb-0 last:border-0 last:pb-0">
               <div className="flex-1">
-                <Label className="sm:hidden">Name</Label>
-                {i === 0 && <Label className="hidden sm:block">Name</Label>}
+                <Label className="sm:hidden font-display">Name</Label>
+                {i === 0 && <Label className="hidden sm:block font-display">Name</Label>}
                 <Input value={ing.name} onChange={(e) => updateIngredient(i, "name", e.target.value)} placeholder="Ingredient" className={theme.input} />
               </div>
               <div className="flex gap-2 items-end">
                 <div className="flex-1 sm:w-20 sm:flex-none">
-                  <Label className="sm:hidden">Amount</Label>
-                  {i === 0 && <Label className="hidden sm:block">Amt</Label>}
+                  <Label className="sm:hidden font-display">Amount</Label>
+                  {i === 0 && <Label className="hidden sm:block font-display">Amt</Label>}
                   <Input value={ing.amount} onChange={(e) => updateIngredient(i, "amount", e.target.value)} placeholder="1" className={theme.input} />
                 </div>
                 <div className="flex-1 sm:w-20 sm:flex-none">
-                  <Label className="sm:hidden">Unit</Label>
-                  {i === 0 && <Label className="hidden sm:block">Unit</Label>}
+                  <Label className="sm:hidden font-display">Unit</Label>
+                  {i === 0 && <Label className="hidden sm:block font-display">Unit</Label>}
                   <Input value={ing.unit} onChange={(e) => updateIngredient(i, "unit", e.target.value)} placeholder="cup" className={theme.input} />
                 </div>
                 {ingredients.length > 1 && (

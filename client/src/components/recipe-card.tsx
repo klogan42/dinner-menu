@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, Star, Users } from "lucide-react";
+import { Clock, Star, Users, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Recipe } from "@/lib/types";
-import { useToggleFavorite } from "@/lib/hooks";
+import { useToggleFavorite, useDeleteRecipe } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
 
 function formatDate(dateStr: string) {
@@ -18,8 +18,10 @@ function formatDate(dateStr: string) {
 
 export function RecipeCard({ recipe, cookedDates }: { recipe: Recipe; cookedDates?: string[] }) {
   const toggleFav = useToggleFavorite();
+  const deleteRecipe = useDeleteRecipe();
   const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
-  const recentDates = cookedDates?.slice(0, 5) ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  const recentDates = cookedDates?.filter((d) => d <= today).slice(0, 5) ?? [];
 
   return (
     <Card className={`${theme.card} hover:shadow-md transition-shadow`}>
@@ -30,17 +32,25 @@ export function RecipeCard({ recipe, cookedDates }: { recipe: Recipe; cookedDate
               {recipe.title}
             </CardTitle>
           </Link>
-          <button
-            onClick={() => toggleFav.mutate(recipe.id)}
-            className="text-amber-400 hover:text-amber-500 transition-colors shrink-0 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-          >
-            <Star className="size-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
-          </button>
+          <div className="flex items-center shrink-0">
+            <button
+              onClick={() => toggleFav.mutate(recipe.id)}
+              className="text-amber-400 hover:text-amber-500 transition-colors p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
+              <Star className="size-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
+            </button>
+            <button
+              onClick={() => { if (confirm(`Delete "${recipe.title}"?`)) deleteRecipe.mutate(recipe.id); }}
+              className="text-amber-900 hover:text-red-500 transition-colors p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <p className={`text-sm ${theme.muted} mb-3 line-clamp-2`}>
+        <p className="text-sm font-display text-amber-900 mb-3 line-clamp-2">
           {recipe.description}
         </p>
 

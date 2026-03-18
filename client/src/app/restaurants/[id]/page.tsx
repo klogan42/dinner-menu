@@ -39,7 +39,7 @@ export default function RestaurantDetailPage({
 
   return (
     <div className="w-full min-w-0">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-amber-700 hover:text-amber-900 min-h-[44px]">
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4 font-display text-amber-700 hover:text-amber-900 min-h-[44px]">
         <ArrowLeft className="size-4" /> Back
       </Button>
 
@@ -88,11 +88,11 @@ export default function RestaurantDetailPage({
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mb-6">
         <Link href={`/restaurants/${restaurant.id}/edit`}>
-          <Button variant="outline" className={`${theme.buttonOutline} min-h-[44px]`}>
+          <Button variant="outline" className={`${theme.buttonOutline} font-display min-h-[44px]`}>
             <Pencil className="size-4" /> Edit
           </Button>
         </Link>
-        <Button variant="destructive" onClick={handleDelete} className="min-h-[44px]">
+        <Button variant="destructive" onClick={handleDelete} className="font-display min-h-[44px]">
           <Trash2 className="size-4" /> Delete
         </Button>
       </div>

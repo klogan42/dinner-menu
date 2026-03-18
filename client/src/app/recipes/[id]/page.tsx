@@ -9,13 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRecipe, useDeleteRecipe, useToggleFavorite, useMealHistory, useSetMealHistory, useRecipeHistory } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
-
-function toDateKey(date: Date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+import { toDateKey } from "@/lib/utils";
 
 function getWeekDateKeys() {
   const today = new Date();
@@ -68,7 +62,7 @@ export default function RecipeDetailPage({
 
   return (
     <div className="w-full min-w-0">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-amber-700 hover:text-amber-900 min-h-[44px]">
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4 font-display text-amber-700 hover:text-amber-900 min-h-[44px]">
         <ArrowLeft className="size-4" /> Back
       </Button>
 
@@ -92,15 +86,15 @@ export default function RecipeDetailPage({
 
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mb-4">
-        <Button variant="outline" onClick={handleAddToWeek} className={`${theme.buttonOutline} min-h-[44px]`}>
+        <Button variant="outline" onClick={handleAddToWeek} className={`${theme.buttonOutline} font-display min-h-[44px]`}>
           <CalendarPlus className="size-4" /> Add to Week
         </Button>
         <Link href={`/recipes/${recipe.id}/edit`}>
-          <Button variant="outline" className={`${theme.buttonOutline} min-h-[44px]`}>
+          <Button variant="outline" className={`${theme.buttonOutline} font-display min-h-[44px]`}>
             <Pencil className="size-4" /> Edit
           </Button>
         </Link>
-        <Button variant="destructive" onClick={handleDelete} className="min-h-[44px]">
+        <Button variant="destructive" onClick={handleDelete} className="font-display min-h-[44px]">
           <Trash2 className="size-4" /> Delete
         </Button>
       </div>

@@ -24,7 +24,8 @@ export async function GET(
     }));
 
     return NextResponse.json(dates);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/recipes/[id]/history error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

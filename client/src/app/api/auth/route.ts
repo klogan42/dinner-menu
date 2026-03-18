@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { isRateLimited } from "@/lib/rate-limit";
 
 const PASSCODE = process.env.APP_PASSCODE || "12345678";
 
@@ -12,6 +13,10 @@ function makeToken(passcode: string) {
 
 // POST /api/auth — verify passcode
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+  if (isRateLimited(`auth:${ip}`, 5, 60 * 1000)) {
+    return NextResponse.json({ error: "Too many attempts. Try again in a minute." }, { status: 429 });
+  }
   try {
     const { passcode } = await req.json();
     if (!passcode || passcode !== PASSCODE) {
@@ -19,7 +24,8 @@ export async function POST(req: NextRequest) {
     }
     const token = makeToken(passcode);
     return NextResponse.json({ token });
-  } catch {
+  } catch (err) {
+    console.error("POST /api/auth error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

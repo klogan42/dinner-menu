@@ -14,10 +14,10 @@ export const theme = {
   input: "font-display border-amber-200 bg-white focus-visible:ring-amber-400/50 focus-visible:border-amber-400 rounded-xl",
 
   // Primary button (filled)
-  buttonPrimary: "bg-amber-500 hover:bg-amber-600 text-white shadow-sm rounded-xl",
+  buttonPrimary: "font-display bg-amber-500 hover:bg-amber-600 text-white shadow-sm rounded-xl",
 
   // Secondary button (outline)
-  buttonOutline: "border-amber-200 text-amber-800 hover:bg-amber-50 hover:text-amber-900 rounded-xl",
+  buttonOutline: "font-display border-amber-200 text-amber-800 hover:bg-amber-50 hover:text-amber-900 rounded-xl",
 
   // Tag badges
   tag: "bg-amber-100 text-amber-800 text-xs rounded-full",

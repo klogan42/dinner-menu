@@ -15,6 +15,7 @@ export interface Recipe {
   cookTimeMinutes: number;
   servings: number;
   isFavorite: boolean;
+  isEatOut?: boolean;
   createdAt: string;
 }
 

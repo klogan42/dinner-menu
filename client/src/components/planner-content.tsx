@@ -1,28 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store, X } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useRecipes, useRestaurants, useMealHistory, useSetMealHistory } from "@/lib/hooks";
+import { useRecipes, useRestaurants, useMealHistory, useSetMealHistory, useRecipeCooked } from "@/lib/hooks";
 import { api } from "@/lib/api";
 import { DAYS } from "@/lib/types";
 import { theme } from "@/lib/styles";
+import { toDateKey } from "@/lib/utils";
 import { MealCalendar } from "@/components/meal-calendar";
+import { RecipePickerDropdown } from "@/components/recipe-picker-dropdown";
+import { RestaurantPickerDropdown } from "@/components/restaurant-picker-dropdown";
 
 const SHORT_DAYS: Record<string, string> = {
   Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed",
   Thursday: "Thu", Friday: "Fri", Saturday: "Sat",
 };
-
-function toDateKey(date: Date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 function getWeekDays() {
   const today = new Date();
@@ -54,8 +52,30 @@ function formatDate(date: Date) {
 }
 
 export function PlannerContent() {
+  const { update } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // After Stripe checkout, refresh the JWT to pick up "active" status
+  useEffect(() => {
+    if (searchParams.get("paid") === "1") {
+      update().then(() => {
+        router.replace("/");
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { data: recipes } = useRecipes();
+  const { data: cooked = {} } = useRecipeCooked();
   const { past: pastDays, current: currentDays } = getWeekDays();
+
+  const todayStr = toDateKey(new Date());
+  const formatLastAte = (recipeId: string) => {
+    const last = cooked[recipeId]?.[0];
+    if (!last || last > todayStr) return null;
+    return new Date(last + "T00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
 
   // Fetch months needed to cover all visible days
   const now = new Date();
@@ -73,33 +93,25 @@ export function PlannerContent() {
   const setMealHistory = useSetMealHistory();
   const [showPast, setShowPast] = useState(false);
   const [openDay, setOpenDay] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [shoppingList, setShoppingList] = useState("");
   const [showShoppingList, setShowShoppingList] = useState(false);
   const [restaurantPickerDay, setRestaurantPickerDay] = useState<string | null>(null);
-  const [restaurantSearch, setRestaurantSearch] = useState("");
 
   const getRestaurant = (id: string | null | undefined) =>
     id ? restaurants?.find((r) => r.id === id) : undefined;
 
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
-    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.tags.includes("eat out") || r.title.toLowerCase().includes("eat out"))?.id;
+    const recipeId = entry?.recipeId ?? recipes?.find((r) => r.isEatOut)?.id;
     if (recipeId) {
       setMealHistory.mutate({ date: dateKey, recipeId, restaurantId });
     }
     setRestaurantPickerDay(null);
-    setRestaurantSearch("");
   };
-
-  const filteredRestaurants = restaurants?.filter((r) =>
-    r.name.toLowerCase().includes(restaurantSearch.toLowerCase())
-  );
 
   const assignRecipe = (dateKey: string, recipeId: string) => {
     setMealHistory.mutate({ date: dateKey, recipeId });
     setOpenDay(null);
-    setSearchTerm("");
   };
 
   const randomizeWeek = async () => {
@@ -146,9 +158,6 @@ export function PlannerContent() {
     setShowShoppingList(true);
   };
 
-  const filteredRecipes = recipes?.filter((r) =>
-    r.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="w-full min-w-0">
@@ -203,7 +212,7 @@ export function PlannerContent() {
 
             {showPast && pastDays.map(({ day, date, dateKey }) => {
               const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
-              const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+              const isEatOut = recipe?.isEatOut ?? false;
               const restaurant = getRestaurant(history[dateKey]?.restaurantId);
               return (
                 <Card key={dateKey} className={`${theme.card} opacity-60`} size="sm">
@@ -233,7 +242,7 @@ export function PlannerContent() {
 
         {currentDays.map(({ day, date, dateKey, isToday }) => {
           const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
-          const isEatOut = recipe?.tags.includes("eat out") || recipe?.title.toLowerCase().includes("eat out");
+          const isEatOut = recipe?.isEatOut ?? false;
           const restaurant = getRestaurant(history[dateKey]?.restaurantId);
           return (
             <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400/50 bg-amber-100/50" : ""}`} size="sm">
@@ -257,14 +266,14 @@ export function PlannerContent() {
                           <Store className="size-4 text-amber-600 shrink-0" />
                           {restaurant ? (
                             <button
-                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); }}
                               className="text-amber-800 hover:text-amber-600 font-display text-base font-bold truncate transition-colors"
                             >
                               {restaurant.name}
                             </button>
                           ) : (
                             <button
-                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); setRestaurantSearch(""); }}
+                              onClick={() => { setRestaurantPickerDay(restaurantPickerDay === dateKey ? null : dateKey); }}
                               className="text-amber-400 hover:text-amber-600 font-display text-sm transition-colors"
                             >
                               Pick a spot...
@@ -276,74 +285,27 @@ export function PlannerContent() {
                           {recipe.title}
                         </Link>
                       )}
-                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Switch recipe">
+                      <button onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Switch recipe">
                         <RefreshCw className="size-4" />
                       </button>
                       <button onClick={() => randomizeDay(dateKey)} className="text-amber-400 hover:text-amber-600 p-2 -m-1 shrink-0 transition-colors" title="Random recipe">
                         <Dices className="size-4" />
                       </button>
                     </div>
-                    {restaurantPickerDay === dateKey && (
-                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
-                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-display text-amber-800 flex items-center gap-1">
-                              <Store className="size-3.5" /> Pick a restaurant
-                            </span>
-                            <button onClick={() => { setRestaurantPickerDay(null); setRestaurantSearch(""); }} className="text-amber-400 hover:text-amber-600 p-2 -m-1">
-                              <X className="size-4" />
-                            </button>
-                          </div>
-                          <input
-                            type="text"
-                            value={restaurantSearch}
-                            onChange={(e) => setRestaurantSearch(e.target.value)}
-                            placeholder="Search restaurants..."
-                            className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                          />
-                        </div>
-                        {filteredRestaurants?.map((r) => (
-                          <button
-                            key={r.id}
-                            onClick={() => assignRestaurant(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
-                          >
-                            {r.name}
-                            {r.cuisine && <span className="text-xs text-amber-600/60 ml-2">{r.cuisine}</span>}
-                          </button>
-                        ))}
-                        {filteredRestaurants?.length === 0 && (
-                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No restaurants found</div>
-                        )}
-                      </div>
+                    {restaurantPickerDay === dateKey && restaurants && (
+                      <RestaurantPickerDropdown
+                        restaurants={restaurants}
+                        onSelect={(rid) => assignRestaurant(dateKey, rid)}
+                        onClose={() => setRestaurantPickerDay(null)}
+                      />
                     )}
-                    {openDay === dateKey && (
-                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
-                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
-                          <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search..."
-                            className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                          />
-                        </div>
-                        {filteredRecipes?.map((r) => (
-                          <button
-                            key={r.id}
-                            onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
-                          >
-                            {r.title}
-                            <span className="text-xs text-amber-600/60 ml-2">
-                              {r.prepTimeMinutes + r.cookTimeMinutes}m
-                            </span>
-                          </button>
-                        ))}
-                        {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
-                        )}
-                      </div>
+                    {openDay === dateKey && recipes && (
+                      <RecipePickerDropdown
+                        recipes={recipes}
+                        onSelect={(rid) => assignRecipe(dateKey, rid)}
+                        onClose={() => setOpenDay(null)}
+                        formatLastAte={formatLastAte}
+                      />
                     )}
                   </div>
                 ) : (
@@ -351,13 +313,13 @@ export function PlannerContent() {
                     <div className="flex items-center justify-between gap-1 mb-0.5">
                       <span className="font-display text-amber-900 text-sm">
                         {isToday ? "Today" : SHORT_DAYS[day]}
-                        <span className="font-normal text-amber-600/40 ml-1.5">{formatDate(date)}</span>
+                        <span className="font-normal text-amber-900 ml-1.5">{formatDate(date)}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); setSearchTerm(""); }}
-                        className="flex-1 text-left text-amber-400 text-sm font-display py-2 px-3 rounded-xl border border-dashed border-amber-300/60 hover:border-amber-400 hover:text-amber-600 flex items-center justify-between min-h-[44px] transition-colors"
+                        onClick={() => { setOpenDay(openDay === dateKey ? null : dateKey); }}
+                        className="flex-1 text-left text-amber-800 text-sm font-display py-2 px-3 rounded-xl border border-dashed border-amber-800 hover:border-amber-900 hover:text-amber-900 flex items-center justify-between min-h-[44px] transition-colors"
                       >
                         Choose a recipe...
                         <ChevronDown className="size-4" />
@@ -367,33 +329,13 @@ export function PlannerContent() {
                       </button>
                     </div>
 
-                    {openDay === dateKey && (
-                      <div className="mt-2 bg-amber-50/50 border border-amber-200/60 rounded-xl max-h-80 overflow-y-auto shadow-sm">
-                        <div className="p-2.5 sticky top-0 bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/40">
-                          <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search..."
-                            className="w-full font-display text-base sm:text-sm px-3 py-2.5 border border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400"
-                          />
-                        </div>
-                        {filteredRecipes?.map((r) => (
-                          <button
-                            key={r.id}
-                            onClick={() => assignRecipe(dateKey, r.id)}
-                            className="w-full text-left px-3 py-3 text-sm font-display hover:bg-amber-100/50 text-amber-900 active:bg-amber-100 min-h-[44px] transition-colors"
-                          >
-                            {r.title}
-                            <span className="text-xs text-amber-600/60 ml-2">
-                              {r.prepTimeMinutes + r.cookTimeMinutes}m
-                            </span>
-                          </button>
-                        ))}
-                        {filteredRecipes?.length === 0 && (
-                          <div className="px-3 py-2 text-sm font-display text-amber-600/50">No recipes found</div>
-                        )}
-                      </div>
+                    {openDay === dateKey && recipes && (
+                      <RecipePickerDropdown
+                        recipes={recipes}
+                        onSelect={(rid) => assignRecipe(dateKey, rid)}
+                        onClose={() => setOpenDay(null)}
+                        formatLastAte={formatLastAte}
+                      />
                     )}
                   </div>
                 )}

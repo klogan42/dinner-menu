@@ -56,7 +56,7 @@ export function RestaurantCard({ restaurant, visits }: RestaurantCardProps) {
 
       <CardContent className="pt-0">
         {restaurant.cuisine && (
-          <div className={`flex items-center gap-1 text-xs ${theme.muted} mb-2`}>
+          <div className="flex items-center gap-1 text-xs font-display text-amber-900 mb-2">
             <MapPin className="size-3.5" /> {restaurant.cuisine}
           </div>
         )}
@@ -68,22 +68,22 @@ export function RestaurantCard({ restaurant, visits }: RestaurantCardProps) {
         )}
 
         {lastVisit ? (
-          <div className="flex items-center gap-1 text-xs text-amber-600 mb-2">
+          <div className="flex items-center gap-1 text-xs font-display text-amber-900 mb-2">
             <CalendarDays className="size-3.5" />
-            <span className="font-display">
+            <span>
               Last visited {formatVisitDate(lastVisit)}
-              {visitCount > 1 && <span className="text-amber-500/60"> · {visitCount} visits</span>}
+              {visitCount > 1 && <span> · {visitCount} visits</span>}
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-1 text-xs text-amber-400 mb-2">
+          <div className="flex items-center gap-1 text-xs font-display text-amber-900 mb-2">
             <CalendarDays className="size-3.5" />
-            <span className="font-display">No visits yet</span>
+            <span>No visits yet</span>
           </div>
         )}
 
         {restaurant.notes && (
-          <p className={`text-sm ${theme.muted} line-clamp-2`}>
+          <p className="text-sm font-display text-amber-900 line-clamp-2">
             {restaurant.notes}
           </p>
         )}

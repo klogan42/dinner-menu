@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { UtensilsCrossed, CalendarDays, BookOpen, Store, ShoppingCart, Shuffle } from "lucide-react";
+import { UtensilsCrossed, CalendarDays, BookOpen, Store, ShoppingCart, Shuffle, History, ShieldCheck } from "lucide-react";
 
 const features = [
   {
@@ -25,9 +25,19 @@ const features = [
     description: "Generate a grocery list from the week's meals in one click. Copy or print it before you head to the store.",
   },
   {
+    icon: History,
+    title: "Meal Tracker",
+    description: "See when you last made each recipe. Know at a glance what you haven't cooked in a while and keep things fresh.",
+  },
+  {
     icon: Shuffle,
     title: "Randomize Your Week",
     description: "Stuck on what to make? Let Dinner Table pick a week of meals from your recipe collection instantly.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "No Tracking, No Ads",
+    description: "We don't track you, sell your data, or show ads. Your recipes and meal plans stay between you and your family.",
   },
 ];
 
@@ -47,10 +57,10 @@ export function LandingPage() {
           href="/signin"
           className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-display text-base px-8 py-3 rounded-xl shadow-sm transition-colors"
         >
-          Get Started — it&rsquo;s free
+          Start Your 30-Day Free Trial
         </Link>
-        <p className="mt-4 text-sm font-display text-amber-600/50">
-          Sign in with Google or create an account
+        <p className="mt-4 text-base font-display text-amber-700/70">
+          Then $9.99 one-time for lifetime access. No subscription.
         </p>
       </div>
 
@@ -68,7 +78,7 @@ export function LandingPage() {
                 </div>
                 <h3 className="font-display text-amber-900 text-base">{title}</h3>
               </div>
-              <p className="font-display text-sm text-amber-700/60 leading-relaxed">
+              <p className="font-display text-sm text-amber-700/70 leading-relaxed">
                 {description}
               </p>
             </div>
@@ -78,7 +88,7 @@ export function LandingPage() {
 
       {/* Footer links */}
       <div className="text-center pb-8">
-        <p className="text-xs font-display text-amber-600/40">
+        <p className="text-xs font-display text-amber-700/70">
           <Link href="/terms" className="hover:text-amber-600 transition-colors">Terms</Link>
           {" · "}
           <Link href="/privacy" className="hover:text-amber-600 transition-colors">Privacy</Link>

@@ -17,6 +17,7 @@ export interface IRecipe extends Document {
   cookTimeMinutes: number;
   servings: number;
   isFavorite: boolean;
+  isEatOut: boolean;
   createdAt: Date;
 }
 
@@ -41,6 +42,7 @@ const RecipeSchema = new Schema<IRecipe>(
     cookTimeMinutes: { type: Number, default: 0 },
     servings: { type: Number, default: 4 },
     isFavorite: { type: Boolean, default: false },
+    isEatOut: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
   },
   {

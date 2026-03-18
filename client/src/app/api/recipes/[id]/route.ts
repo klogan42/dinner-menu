@@ -17,7 +17,8 @@ export async function GET(
     const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(recipe);
-  } catch {
+  } catch (err) {
+    console.error("GET /api/recipes/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -44,7 +45,8 @@ export async function PUT(
     );
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(recipe);
-  } catch {
+  } catch (err) {
+    console.error("PUT /api/recipes/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -62,7 +64,8 @@ export async function DELETE(
     const deleted = await Recipe.findOneAndDelete({ _id: id, userId: auth.userId });
     if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return new NextResponse(null, { status: 204 });
-  } catch {
+  } catch (err) {
+    console.error("DELETE /api/recipes/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
