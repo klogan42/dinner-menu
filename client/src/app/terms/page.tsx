@@ -15,6 +15,15 @@ export default function TermsPage() {
           You are responsible for maintaining the confidentiality of your account
           credentials and for all activity that occurs under your account.
         </p>
+        <p>
+          New accounts include a 30-day free trial. After the trial, a one-time
+          payment of $9.99 grants lifetime access. Payments are processed securely
+          through Stripe.
+        </p>
+        <p>
+          You can delete your account and all associated data at any time from the
+          Account page.
+        </p>
       </div>
     </div>
   );

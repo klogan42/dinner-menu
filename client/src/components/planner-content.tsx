@@ -16,6 +16,7 @@ import { toDateKey } from "@/lib/utils";
 import { MealCalendar } from "@/components/meal-calendar";
 import { RecipePickerDropdown } from "@/components/recipe-picker-dropdown";
 import { RestaurantPickerDropdown } from "@/components/restaurant-picker-dropdown";
+import { WelcomeCard } from "@/components/welcome-card";
 
 const SHORT_DAYS: Record<string, string> = {
   Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed",
@@ -164,6 +165,8 @@ export function PlannerContent() {
       {recipesLoading && <div className={theme.empty}>Loading...</div>}
       {!recipesLoading && <>
       <h1 className={`${theme.heading} mb-4`}>What&apos;s for Dinner?</h1>
+
+      {recipes && recipes.filter((r) => !r.isEatOut).length === 0 && <WelcomeCard />}
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Calendar — left on desktop, below planner on mobile */}

@@ -86,14 +86,6 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* Footer links */}
-      <div className="text-center pb-8">
-        <p className="text-xs font-display text-amber-700/70">
-          <Link href="/terms" className="hover:text-amber-600 transition-colors">Terms</Link>
-          {" · "}
-          <Link href="/privacy" className="hover:text-amber-600 transition-colors">Privacy</Link>
-        </p>
-      </div>
     </div>
   );
 }

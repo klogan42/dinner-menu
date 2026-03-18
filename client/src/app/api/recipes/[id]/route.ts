@@ -61,8 +61,10 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const deleted = await Recipe.findOneAndDelete({ _id: id, userId: auth.userId });
-    if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
+    if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (recipe.isEatOut) return NextResponse.json({ error: "The Eat Out recipe cannot be deleted" }, { status: 400 });
+    await Recipe.findOneAndDelete({ _id: id, userId: auth.userId });
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     console.error("DELETE /api/recipes/[id] error:", err);

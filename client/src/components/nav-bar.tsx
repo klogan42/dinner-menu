@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UtensilsCrossed, CalendarDays, Plus, Store, LogOut } from "lucide-react";
+import { UtensilsCrossed, CalendarDays, Store, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
 
@@ -15,10 +15,6 @@ const links = [
 export function NavBar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-
-  const addHref = pathname.startsWith("/restaurants")
-    ? "/add?type=restaurant"
-    : "/add";
 
   return (
     <header className="bg-amber-50/80 backdrop-blur-md border-b border-amber-200/50 fixed top-0 z-50 w-full">
@@ -57,16 +53,16 @@ export function NavBar() {
             })}
 
             <Link
-              href={addHref}
+              href="/account"
               className={cn(
                 "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-display transition-all min-h-[44px]",
-                pathname.startsWith("/add")
+                pathname === "/account"
                   ? "bg-amber-100/70 text-amber-700"
                   : "text-amber-600/50 hover:text-amber-800 hover:bg-amber-100/40"
               )}
+              title="Account"
             >
-              <Plus className="size-5" />
-              <span className="hidden sm:inline">Add</span>
+              <User className="size-5" />
             </Link>
 
             <button

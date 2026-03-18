@@ -94,9 +94,11 @@ export default function RecipeDetailPage({
             <Pencil className="size-4" /> Edit
           </Button>
         </Link>
+        {!recipe.isEatOut && (
         <Button variant="destructive" onClick={handleDelete} className="font-display min-h-[44px]">
           <Trash2 className="size-4" /> Delete
         </Button>
+        )}
       </div>
 
       {/* Time + servings */}

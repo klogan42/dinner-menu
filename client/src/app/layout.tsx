@@ -49,6 +49,12 @@ export default function RootLayout({
         <Providers>
           <NavBar />
           <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-18 sm:pt-20 pb-4 sm:pb-6 overflow-x-hidden">{children}</main>
+          <footer className="max-w-6xl mx-auto px-3 sm:px-4 pb-6 pt-4 mt-4 border-t border-amber-300 flex justify-center gap-3 text-sm font-display text-amber-700">
+            <a href="/tips" className="hover:text-amber-700 transition-colors">Tips</a>
+            <a href="/terms" className="hover:text-amber-700 transition-colors">Terms</a>
+            <a href="/privacy" className="hover:text-amber-700 transition-colors">Privacy</a>
+            <a href="/support" className="hover:text-amber-700 transition-colors">Support</a>
+          </footer>
         </Providers>
       </body>
     </html>

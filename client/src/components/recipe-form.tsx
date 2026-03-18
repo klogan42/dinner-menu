@@ -77,8 +77,8 @@ export function RecipeForm({ recipe }: RecipeFormProps) {
       await updateRecipe.mutateAsync({ id: recipe.id, recipe: data });
       router.push(`/recipes/${recipe.id}`);
     } else {
-      const created = await createRecipe.mutateAsync(data);
-      router.push(`/recipes/${created.id}`);
+      await createRecipe.mutateAsync(data);
+      router.push("/");
     }
   };
 

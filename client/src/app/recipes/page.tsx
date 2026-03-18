@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Clock, Star, Hourglass } from "lucide-react";
+import Link from "next/link";
+import { Search, Clock, Star, Hourglass, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { RecipeCard } from "@/components/recipe-card";
 import { useRecipes, useRecipeCooked } from "@/lib/hooks";
@@ -67,7 +68,12 @@ export default function RecipesPage() {
 
   return (
     <div>
-      <h1 className={`${theme.heading} mb-6`}>Recipes</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className={theme.heading}>Recipes</h1>
+        <Link href="/add" className={`${theme.buttonPrimary} font-display flex items-center gap-1.5 px-4 py-2 text-sm rounded-xl min-h-[44px]`}>
+          <Plus className="size-4" /> Add Recipe
+        </Link>
+      </div>
 
       <div className="mb-3">
         <div className="relative">

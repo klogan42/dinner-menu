@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Star, Clock, Hourglass } from "lucide-react";
+import Link from "next/link";
+import { Search, Star, Clock, Hourglass, Plus } from "lucide-react";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { useRestaurants, useRestaurantVisits } from "@/lib/hooks";
 import { theme } from "@/lib/styles";
@@ -57,7 +58,12 @@ export default function RestaurantsPage() {
 
   return (
     <div>
-      <h1 className={`${theme.heading} mb-6`}>Restaurants</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className={theme.heading}>Restaurants</h1>
+        <Link href="/add?type=restaurant" className={`${theme.buttonPrimary} font-display flex items-center gap-1.5 px-4 py-2 text-sm rounded-xl min-h-[44px]`}>
+          <Plus className="size-4" /> Add a Spot
+        </Link>
+      </div>
 
       <div className="mb-3">
         <div className="relative">
