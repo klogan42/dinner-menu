@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, X, CalendarDays, CalendarRange, Store } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, CalendarDays, CalendarRange, Store, UtensilsCrossed } from "lucide-react";
 import { useMealHistory, useRecipes, useRestaurants, useSetMealHistory } from "@/lib/hooks";
 import { toDateKey } from "@/lib/utils";
 import { RecipePickerDropdown } from "@/components/recipe-picker-dropdown";
 import { RestaurantPickerDropdown } from "@/components/restaurant-picker-dropdown";
+import { LeftoversPickerDropdown } from "@/components/leftovers-picker-dropdown";
 
 const DAY_NAMES_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_NAMES_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -48,6 +49,7 @@ export function MealCalendar() {
   const [monthMonth, setMonthMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [restaurantPickerDate, setRestaurantPickerDate] = useState<string | null>(null);
+  const [leftoversPickerDate, setLeftoversPickerDate] = useState<string | null>(null);
   const [showPastDays, setShowPastDays] = useState(false);
 
   const windowStart = useMemo(() => {
@@ -93,6 +95,39 @@ export function MealCalendar() {
     return recipes?.find((r) => r.id === recipeId)?.isEatOut ?? false;
   };
 
+  const isLeftoversRecipe = (recipeId: string) => {
+    return recipes?.find((r) => r.id === recipeId)?.isLeftovers ?? false;
+  };
+
+  const getRecipeById = (id: string | null | undefined) =>
+    id ? recipes?.find((r) => r.id === id) : undefined;
+
+  const getRecentMeals = () => {
+    const today = todayKey;
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const cutoff = toDateKey(sevenDaysAgo);
+    const seen = new Set<string>();
+    const results: { recipe: NonNullable<ReturnType<typeof getRecipeById>>; date: string }[] = [];
+    for (const [date, entry] of Object.entries(history)) {
+      if (date < cutoff || date > today || !entry?.recipeId) continue;
+      const recipe = getRecipeById(entry.recipeId);
+      if (recipe && !recipe.isEatOut && !recipe.isLeftovers && !seen.has(recipe.id)) {
+        seen.add(recipe.id);
+        results.push({ recipe, date });
+      }
+    }
+    return results.sort((a, b) => b.date.localeCompare(a.date));
+  };
+
+  const assignLeftovers = (dateKey: string, leftoversOfId: string) => {
+    const leftoversRecipeId = recipes?.find((r) => r.isLeftovers)?.id;
+    if (leftoversRecipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId: leftoversRecipeId, leftoversOfId });
+    }
+    setLeftoversPickerDate(null);
+  };
+
   const prev = () => {
     if (view === "2week") { setWeekOffset(weekOffset - 1); }
     else {
@@ -119,13 +154,15 @@ export function MealCalendar() {
   const assignMeal = (recipeId: string) => {
     if (!selectedDate) return;
     const recipe = recipes?.find((r) => r.id === recipeId);
-    const isEatOut = recipe?.isEatOut ?? false;
+    const savedDate = selectedDate;
     setMealHistory.mutate({ date: selectedDate, recipeId });
-    if (isEatOut && restaurants?.length) {
-      setRestaurantPickerDate(selectedDate);
-          }
     setSelectedDate(null);
-      };
+    if (recipe?.isEatOut) {
+      setRestaurantPickerDate(savedDate);
+    } else if (recipe?.isLeftovers) {
+      setLeftoversPickerDate(savedDate);
+    }
+  };
 
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
@@ -269,6 +306,17 @@ export function MealCalendar() {
                                 </span>
                               </button>
                             )}
+                            {isLeftoversRecipe(recipeId!) && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setLeftoversPickerDate(leftoversPickerDate === key ? null : key); }}
+                                className="flex items-center gap-1.5 mt-1 text-left"
+                              >
+                                <UtensilsCrossed className="size-3.5 text-amber-600" />
+                                <span className={`text-sm font-display transition-colors ${entry?.leftoversOfId ? "text-amber-800 font-bold" : "text-amber-800"}`}>
+                                  {entry?.leftoversOfId ? getRecipeById(entry.leftoversOfId)?.title ?? "Leftovers" : "What are you reheating?"}
+                                </span>
+                              </button>
+                            )}
                           </div>
                         ) : restaurantName ? (
                           <button
@@ -297,6 +345,13 @@ export function MealCalendar() {
 
                     {isSelected && recipePicker}
                     {restaurantPicker(key)}
+                    {leftoversPickerDate === key && (
+                      <LeftoversPickerDropdown
+                        recentRecipes={getRecentMeals()}
+                        onSelect={(rid) => assignLeftovers(key, rid)}
+                        onClose={() => setLeftoversPickerDate(null)}
+                      />
+                    )}
                   </div>
                 );
               };
@@ -387,6 +442,14 @@ export function MealCalendar() {
                         </span>
                       </div>
                     )}
+                    {recipeId && isLeftoversRecipe(recipeId) && (
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <UtensilsCrossed className="size-3 text-amber-600" />
+                        <span className={`text-xs line-clamp-1 font-display ${entry?.leftoversOfId ? "text-amber-800 font-bold" : "text-amber-800"}`}>
+                          {entry?.leftoversOfId ? getRecipeById(entry.leftoversOfId)?.title ?? "Leftovers" : "What?"}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -444,6 +507,11 @@ export function MealCalendar() {
                       {restaurantName ?? "Pick a spot..."}
                     </div>
                   )}
+                  {recipeId && isLeftoversRecipe(recipeId) && (
+                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${entry?.leftoversOfId ? "text-amber-800 font-bold" : "text-amber-800"}`}>
+                      {entry?.leftoversOfId ? getRecipeById(entry.leftoversOfId)?.title ?? "Leftovers" : "What?"}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -460,6 +528,17 @@ export function MealCalendar() {
       {restaurantPickerDate && (
         <div className={view === "2week" ? "hidden sm:block" : ""}>
           {restaurantPicker(restaurantPickerDate)}
+        </div>
+      )}
+
+      {/* Leftovers picker for desktop / month view */}
+      {leftoversPickerDate && (
+        <div className={view === "2week" ? "hidden sm:block" : ""}>
+          <LeftoversPickerDropdown
+            recentRecipes={getRecentMeals()}
+            onSelect={(rid) => assignLeftovers(leftoversPickerDate, rid)}
+            onClose={() => setLeftoversPickerDate(null)}
+          />
         </div>
       )}
     </div>

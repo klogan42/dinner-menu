@@ -63,7 +63,7 @@ export async function DELETE(
     const { id } = await params;
     const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (recipe.isEatOut) return NextResponse.json({ error: "The Eat Out recipe cannot be deleted" }, { status: 400 });
+    if (recipe.isEatOut || recipe.isLeftovers) return NextResponse.json({ error: "This system recipe cannot be deleted" }, { status: 400 });
     await Recipe.findOneAndDelete({ _id: id, userId: auth.userId });
     return new NextResponse(null, { status: 204 });
   } catch (err) {

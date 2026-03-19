@@ -26,14 +26,14 @@ export async function PUT(
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { recipeId, restaurantId } = parsed.data;
+    const { recipeId, restaurantId, leftoversOfId } = parsed.data;
 
     if (recipeId === null) {
       await MealHistory.deleteOne({ date, userId: auth.userId });
     } else {
       await MealHistory.findOneAndUpdate(
         { date, userId: auth.userId },
-        { date, userId: auth.userId, recipeId, restaurantId: restaurantId ?? null },
+        { date, userId: auth.userId, recipeId, restaurantId: restaurantId ?? null, leftoversOfId: leftoversOfId ?? null },
         { upsert: true }
       );
     }

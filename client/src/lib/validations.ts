@@ -21,6 +21,7 @@ export const recipeSchema = z.object({
 export const mealHistoryUpdateSchema = z.object({
   recipeId: z.string().min(1).max(100).nullable(),
   restaurantId: z.string().min(1).max(100).nullable().optional(),
+  leftoversOfId: z.string().min(1).max(100).nullable().optional(),
 });
 
 export const restaurantSchema = z.object({

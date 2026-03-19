@@ -1,22 +1,41 @@
 import { Db } from "mongodb";
 
-// Creates the default "Eat Out" recipe for a new user (if it doesn't already exist)
-export async function seedNewUser(db: Db, userId: string) {
-  const existing = await db.collection("recipes").findOne({ userId, isEatOut: true });
-  if (existing) return;
-
-  await db.collection("recipes").insertOne({
-    userId,
+const SEED_RECIPES = [
+  {
     title: "Eat Out",
-    description: "",
     tags: ["eat out"],
-    ingredients: [],
-    steps: [],
-    prepTimeMinutes: 0,
-    cookTimeMinutes: 0,
-    servings: 1,
-    isFavorite: false,
     isEatOut: true,
-    createdAt: new Date(),
-  });
+    isLeftovers: false,
+  },
+  {
+    title: "Leftovers",
+    tags: ["leftovers"],
+    isEatOut: false,
+    isLeftovers: true,
+  },
+];
+
+// Creates default system recipes for a new user
+export async function seedNewUser(db: Db, userId: string) {
+  for (const seed of SEED_RECIPES) {
+    const filter = seed.isEatOut
+      ? { userId, isEatOut: true }
+      : { userId, isLeftovers: true };
+
+    const existing = await db.collection("recipes").findOne(filter);
+    if (existing) continue;
+
+    await db.collection("recipes").insertOne({
+      userId,
+      description: "",
+      ingredients: [],
+      steps: [],
+      prepTimeMinutes: 0,
+      cookTimeMinutes: 0,
+      servings: 1,
+      isFavorite: false,
+      createdAt: new Date(),
+      ...seed,
+    });
+  }
 }

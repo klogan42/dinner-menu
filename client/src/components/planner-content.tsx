@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store } from "lucide-react";
+import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,6 +17,7 @@ import { MealCalendar } from "@/components/meal-calendar";
 import { RecipePickerDropdown } from "@/components/recipe-picker-dropdown";
 import { RestaurantPickerDropdown } from "@/components/restaurant-picker-dropdown";
 import { WelcomeCard } from "@/components/welcome-card";
+import { LeftoversPickerDropdown } from "@/components/leftovers-picker-dropdown";
 
 const SHORT_DAYS: Record<string, string> = {
   Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed",
@@ -97,9 +98,28 @@ export function PlannerContent() {
   const [shoppingList, setShoppingList] = useState("");
   const [showShoppingList, setShowShoppingList] = useState(false);
   const [restaurantPickerDay, setRestaurantPickerDay] = useState<string | null>(null);
+  const [leftoversPickerDay, setLeftoversPickerDay] = useState<string | null>(null);
 
   const getRestaurant = (id: string | null | undefined) =>
     id ? restaurants?.find((r) => r.id === id) : undefined;
+
+  const getRecentMeals = () => {
+    const today = toDateKey(new Date());
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const cutoff = toDateKey(sevenDaysAgo);
+    const seen = new Set<string>();
+    const results: { recipe: NonNullable<ReturnType<typeof getRecipe>>; date: string }[] = [];
+    for (const [date, entry] of Object.entries(history)) {
+      if (date < cutoff || date > today || !entry?.recipeId) continue;
+      const recipe = getRecipe(entry.recipeId);
+      if (recipe && !recipe.isEatOut && !recipe.isLeftovers && !seen.has(recipe.id)) {
+        seen.add(recipe.id);
+        results.push({ recipe, date });
+      }
+    }
+    return results.sort((a, b) => b.date.localeCompare(a.date));
+  };
 
   const assignRestaurant = (dateKey: string, restaurantId: string) => {
     const entry = history[dateKey];
@@ -110,7 +130,22 @@ export function PlannerContent() {
     setRestaurantPickerDay(null);
   };
 
+  const assignLeftovers = (dateKey: string, leftoversOfId: string) => {
+    const leftoversRecipeId = recipes?.find((r) => r.isLeftovers)?.id;
+    if (leftoversRecipeId) {
+      setMealHistory.mutate({ date: dateKey, recipeId: leftoversRecipeId, leftoversOfId });
+    }
+    setLeftoversPickerDay(null);
+  };
+
   const assignRecipe = (dateKey: string, recipeId: string) => {
+    const recipe = recipes?.find((r) => r.id === recipeId);
+    if (recipe?.isLeftovers) {
+      setMealHistory.mutate({ date: dateKey, recipeId });
+      setOpenDay(null);
+      setLeftoversPickerDay(dateKey);
+      return;
+    }
     setMealHistory.mutate({ date: dateKey, recipeId });
     setOpenDay(null);
   };
@@ -257,9 +292,12 @@ export function PlannerContent() {
         )}
 
         {currentDays.map(({ day, date, dateKey, isToday }) => {
-          const recipe = getRecipe(history[dateKey]?.recipeId ?? null);
+          const entry = history[dateKey];
+          const recipe = getRecipe(entry?.recipeId ?? null);
           const isEatOut = recipe?.isEatOut ?? false;
-          const restaurant = getRestaurant(history[dateKey]?.restaurantId);
+          const isLeftovers = recipe?.isLeftovers ?? false;
+          const restaurant = getRestaurant(entry?.restaurantId);
+          const leftoversOf = entry?.leftoversOfId ? getRecipe(entry.leftoversOfId) : undefined;
           return (
             <Card key={dateKey} className={`${theme.card} ${isToday ? "ring-2 ring-amber-400/50 bg-amber-100/50" : ""}`} size="sm">
               <CardContent className="p-3 sm:p-3">
@@ -270,7 +308,7 @@ export function PlannerContent() {
                         {isToday ? "Today" : SHORT_DAYS[day]}
                         <span className="font-normal text-amber-900 ml-1.5">{formatDate(date)}</span>
                       </span>
-                      {!isEatOut && (
+                      {!isEatOut && !isLeftovers && (
                         <span className="text-xs text-amber-600/40 flex items-center gap-1 shrink-0">
                           <Clock className="size-3.5" /> {recipe.prepTimeMinutes + recipe.cookTimeMinutes}m
                         </span>
@@ -296,6 +334,16 @@ export function PlannerContent() {
                             </button>
                           )}
                         </div>
+                      ) : isLeftovers ? (
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <UtensilsCrossed className="size-4 text-amber-600 shrink-0" />
+                          <button
+                            onClick={() => setLeftoversPickerDay(leftoversPickerDay === dateKey ? null : dateKey)}
+                            className={`font-display truncate transition-colors ${leftoversOf ? "text-amber-800 hover:text-amber-600 text-base font-bold" : "text-amber-800 hover:text-amber-600 text-sm"}`}
+                          >
+                            {leftoversOf ? leftoversOf.title : "What are you reheating?"}
+                          </button>
+                        </div>
                       ) : (
                         <Link href={`/recipes/${recipe.id}`} className="text-amber-800 hover:text-amber-600 font-display text-base truncate">
                           {recipe.title}
@@ -313,6 +361,13 @@ export function PlannerContent() {
                         restaurants={restaurants}
                         onSelect={(rid) => assignRestaurant(dateKey, rid)}
                         onClose={() => setRestaurantPickerDay(null)}
+                      />
+                    )}
+                    {leftoversPickerDay === dateKey && (
+                      <LeftoversPickerDropdown
+                        recentRecipes={getRecentMeals()}
+                        onSelect={(rid) => assignLeftovers(dateKey, rid)}
+                        onClose={() => setLeftoversPickerDay(null)}
                       />
                     )}
                     {openDay === dateKey && recipes && (

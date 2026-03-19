@@ -16,6 +16,7 @@ export interface Recipe {
   servings: number;
   isFavorite: boolean;
   isEatOut?: boolean;
+  isLeftovers?: boolean;
   createdAt: string;
 }
 
@@ -32,6 +33,7 @@ export interface Restaurant {
 export interface MealHistoryEntry {
   recipeId: string | null;
   restaurantId?: string | null;
+  leftoversOfId?: string | null;
 }
 
 export interface WeekPlan {

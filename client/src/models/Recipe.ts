@@ -18,6 +18,7 @@ export interface IRecipe extends Document {
   servings: number;
   isFavorite: boolean;
   isEatOut: boolean;
+  isLeftovers: boolean;
   createdAt: Date;
 }
 
@@ -43,6 +44,7 @@ const RecipeSchema = new Schema<IRecipe>(
     servings: { type: Number, default: 4 },
     isFavorite: { type: Boolean, default: false },
     isEatOut: { type: Boolean, default: false },
+    isLeftovers: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
   },
   {

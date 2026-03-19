@@ -5,6 +5,7 @@ export interface IMealHistory extends Document {
   date: string; // YYYY-MM-DD
   recipeId: string;
   restaurantId?: string;
+  leftoversOfId?: string;
 }
 
 const MealHistorySchema = new Schema<IMealHistory>(
@@ -13,6 +14,7 @@ const MealHistorySchema = new Schema<IMealHistory>(
     date: { type: String, required: true },
     recipeId: { type: String, required: true },
     restaurantId: { type: String, default: null },
+    leftoversOfId: { type: String, default: null },
   },
   {
     toJSON: {

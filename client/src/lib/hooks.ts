@@ -79,17 +79,18 @@ function updateMealCache(
   qc: ReturnType<typeof useQueryClient>,
   date: string,
   recipeId: string | null,
-  restaurantId?: string | null
+  restaurantId?: string | null,
+  leftoversOfId?: string | null
 ) {
   const [year, month] = date.split("-").map(Number);
   const queryKey = ["mealhistory", year, month];
-  const current = qc.getQueryData<Record<string, { recipeId: string; restaurantId?: string }>>(queryKey);
+  const current = qc.getQueryData<Record<string, { recipeId: string; restaurantId?: string; leftoversOfId?: string }>>(queryKey);
   if (current === undefined) return { queryKey, previous: undefined };
   const updated = { ...current };
   if (recipeId === null) {
     delete updated[date];
   } else {
-    updated[date] = { recipeId, ...(restaurantId ? { restaurantId } : {}) };
+    updated[date] = { recipeId, ...(restaurantId ? { restaurantId } : {}), ...(leftoversOfId ? { leftoversOfId } : {}) };
   }
   qc.setQueryData(queryKey, updated);
   return { queryKey, previous: current };
@@ -98,16 +99,16 @@ function updateMealCache(
 export function useSetMealHistory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ date, recipeId, restaurantId }: { date: string; recipeId: string | null; restaurantId?: string | null }) =>
-      api.setMealHistory(date, recipeId, restaurantId),
-    onMutate: async ({ date, recipeId, restaurantId }) => {
+    mutationFn: ({ date, recipeId, restaurantId, leftoversOfId }: { date: string; recipeId: string | null; restaurantId?: string | null; leftoversOfId?: string | null }) =>
+      api.setMealHistory(date, recipeId, restaurantId, leftoversOfId),
+    onMutate: async ({ date, recipeId, restaurantId, leftoversOfId }) => {
       const [year, month] = date.split("-").map(Number);
       await qc.cancelQueries({ queryKey: ["mealhistory", year, month] });
-      return updateMealCache(qc, date, recipeId, restaurantId);
+      return updateMealCache(qc, date, recipeId, restaurantId, leftoversOfId);
     },
-    onSuccess: (_data, { date, recipeId, restaurantId }) => {
+    onSuccess: (_data, { date, recipeId, restaurantId, leftoversOfId }) => {
       // Confirm the cache update on success — prevents a stale refetch from reverting the change
-      updateMealCache(qc, date, recipeId, restaurantId);
+      updateMealCache(qc, date, recipeId, restaurantId, leftoversOfId);
     },
     onError: (_err, _vars, context) => {
       if (context?.previous !== undefined) {

@@ -48,10 +48,10 @@ export const api = {
   getMealHistory: (year: number, month: number) =>
     fetchJson<Record<string, MealHistoryEntry>>(`/api/mealhistory?year=${year}&month=${month}`),
 
-  setMealHistory: (date: string, recipeId: string | null, restaurantId?: string | null) =>
+  setMealHistory: (date: string, recipeId: string | null, restaurantId?: string | null, leftoversOfId?: string | null) =>
     fetchJson<void>(`/api/mealhistory/${date}`, {
       method: "PUT",
-      body: JSON.stringify({ recipeId, restaurantId }),
+      body: JSON.stringify({ recipeId, restaurantId, leftoversOfId }),
     }),
 
   // Restaurants

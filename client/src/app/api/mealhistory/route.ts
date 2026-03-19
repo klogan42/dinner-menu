@@ -30,9 +30,13 @@ export async function GET(req: NextRequest) {
       date: { $gte: from, $lte: to },
     });
 
-    const result: Record<string, { recipeId: string; restaurantId?: string }> = {};
+    const result: Record<string, { recipeId: string; restaurantId?: string; leftoversOfId?: string }> = {};
     for (const e of entries) {
-      result[e.date] = { recipeId: e.recipeId, ...(e.restaurantId ? { restaurantId: e.restaurantId } : {}) };
+      result[e.date] = {
+        recipeId: e.recipeId,
+        ...(e.restaurantId ? { restaurantId: e.restaurantId } : {}),
+        ...(e.leftoversOfId ? { leftoversOfId: e.leftoversOfId } : {}),
+      };
     }
 
     return NextResponse.json(result);

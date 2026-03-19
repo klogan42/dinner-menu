@@ -39,7 +39,7 @@ export function RecipeCard({ recipe, cookedDates }: { recipe: Recipe; cookedDate
             >
               <Star className="size-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
             </button>
-            {!recipe.isEatOut && (
+            {!recipe.isEatOut && !recipe.isLeftovers && (
             <button
               onClick={() => { if (confirm(`Delete "${recipe.title}"?`)) deleteRecipe.mutate(recipe.id); }}
               className="text-amber-900 hover:text-red-500 transition-colors p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
