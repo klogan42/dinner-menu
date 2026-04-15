@@ -37,7 +37,7 @@ export function SupportPrompt() {
   }, [session]);
 
   const dismiss = () => {
-    localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+    localStorage.setItem(LAST_PROMPT_KEY, new Date().toISOString());
     setVisible(false);
   };
 
