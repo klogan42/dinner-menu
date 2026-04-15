@@ -10,14 +10,14 @@ const features = [
     description: "Plan your week at a glance with a two-week or monthly calendar view. Assign, swap, and shuffle meals with one tap.",
   },
   {
+    icon: Store,
+    title: "Restaurant Tracker",
+    description: "Keep a list of go-to spots, log each visit, and take notes like favorite meals. See when you last ate out and rediscover places you love.",
+  },
+  {
     icon: BookOpen,
     title: "Recipe Library",
     description: "Store all your family favorites with ingredients, steps, and tags. Filter by quick meals, crockpot, grill, and more.",
-  },
-  {
-    icon: Store,
-    title: "Restaurant Tracker",
-    description: "Keep a list of go-to spots and log each visit. See when you last ate out and rediscover places you love.",
   },
   {
     icon: ShoppingCart,
@@ -59,18 +59,6 @@ export function LandingPage() {
         >
           Get Started — It&rsquo;s Free
         </Link>
-        <p className="mt-4 text-base font-display text-amber-700/70">
-          Free to use. If you like it,{" "}
-          <a
-            href="https://buymeacoffee.com/kylelogan"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-amber-600 hover:text-amber-700 underline underline-offset-2"
-          >
-            I could use a cup of joe
-          </a>
-          .
-        </p>
       </div>
 
       {/* Features */}
@@ -101,10 +89,10 @@ export function LandingPage() {
           href="https://buymeacoffee.com/kylelogan"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-display text-sm rounded-xl transition-colors border border-amber-200/70"
+          className="inline-flex items-center gap-2 font-display text-sm text-amber-600/60 hover:text-amber-700 transition-colors"
         >
           <Coffee className="size-4" />
-          Buy me a coffee
+          If you like it, I could use a cup of joe
         </a>
       </div>
 
