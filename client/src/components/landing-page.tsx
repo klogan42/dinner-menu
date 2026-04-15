@@ -89,10 +89,10 @@ export function LandingPage() {
           href="https://buymeacoffee.com/kylelogan"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 font-display text-sm text-amber-600/60 hover:text-amber-700 transition-colors"
+          className="inline-flex items-center gap-2 font-display text-sm text-amber-700 underline underline-offset-4"
         >
+          If you like it, I could use a cup of coffee
           <Coffee className="size-4" />
-          If you like it, I could use a cup of joe
         </a>
       </div>
 
