@@ -15,6 +15,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const userId = req.nextUrl.searchParams.get("userId");
+  if (!userId) {
+    return NextResponse.json({ error: "userId query parameter required" }, { status: 400 });
+  }
+
   try {
     await connectDB();
 
@@ -30,7 +35,7 @@ export async function GET(req: NextRequest) {
       date.setDate(sunday.getDate() + i);
       const dateKey = toDateKey(date);
 
-      const entry = await MealHistory.findOne({ date: dateKey });
+      const entry = await MealHistory.findOne({ date: dateKey, userId });
       let recipe = null;
 
       if (entry) {
