@@ -50,7 +50,7 @@ export function LandingPage() {
           <UtensilsCrossed className="size-10 text-amber-500" />
           <h1 className="text-5xl font-display text-amber-900 tracking-tight">Dinner Table</h1>
         </div>
-        <p className="text-xl font-display text-amber-700/70 mb-8 leading-relaxed">
+        <p className="text-xl font-display text-amber-900/70 mb-8 leading-relaxed">
           The simple family meal planner. Plan the week, manage recipes, and never ask &ldquo;what&rsquo;s for dinner?&rdquo; again.
         </p>
         <Link
@@ -75,7 +75,7 @@ export function LandingPage() {
                 </div>
                 <h3 className="font-display text-amber-900 text-base">{title}</h3>
               </div>
-              <p className="font-display text-sm text-amber-700/70 leading-relaxed">
+              <p className="font-display text-sm text-amber-900/70 leading-relaxed">
                 {description}
               </p>
             </div>
