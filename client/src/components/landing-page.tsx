@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { UtensilsCrossed, CalendarDays, BookOpen, Store, ShoppingCart, Shuffle, History, ShieldCheck } from "lucide-react";
+import { UtensilsCrossed, CalendarDays, BookOpen, Store, ShoppingCart, Shuffle, History, ShieldCheck, Coffee } from "lucide-react";
 
 const features = [
   {
@@ -57,10 +57,19 @@ export function LandingPage() {
           href="/signin"
           className="inline-block bg-amber-500 hover:bg-amber-600 text-white font-display text-base px-8 py-3 rounded-xl shadow-sm transition-colors"
         >
-          Start Your 30-Day Free Trial
+          Get Started — It&rsquo;s Free
         </Link>
         <p className="mt-4 text-base font-display text-amber-700/70">
-          Then $9.99 one-time for lifetime access. No subscription.
+          Free to use. If you like it,{" "}
+          <a
+            href="https://buymeacoffee.com/kylelogan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-600 hover:text-amber-700 underline underline-offset-2"
+          >
+            I could use a cup of joe
+          </a>
+          .
         </p>
       </div>
 
@@ -84,6 +93,19 @@ export function LandingPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Support */}
+      <div className="max-w-3xl mx-auto px-4 pb-16 text-center">
+        <a
+          href="https://buymeacoffee.com/kylelogan"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-display text-sm rounded-xl transition-colors border border-amber-200/70"
+        >
+          <Coffee className="size-4" />
+          Buy me a coffee
+        </a>
       </div>
 
     </div>

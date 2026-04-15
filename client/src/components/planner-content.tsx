@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { Shuffle, Trash2, Clock, ShoppingCart, ClipboardCopy, ChevronDown, ChevronRight, RefreshCw, Dices, Store, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,20 +52,6 @@ function formatDate(date: Date) {
 }
 
 export function PlannerContent() {
-  const { update } = useSession();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  // After Stripe checkout, refresh the JWT to pick up "active" status
-  useEffect(() => {
-    if (searchParams.get("paid") === "1") {
-      update().then(() => {
-        window.location.href = "/";
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const { data: recipes, isLoading: recipesLoading } = useRecipes();
   const { data: cooked = {} } = useRecipeCooked();
   const { past: pastDays, current: currentDays } = getWeekDays();

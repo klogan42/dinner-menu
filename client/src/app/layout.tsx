@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { NavBar } from "@/components/nav-bar";
+import { SupportPrompt } from "@/components/support-prompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default function RootLayout({
       >
         <Providers>
           <NavBar />
+          <SupportPrompt />
           <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-18 sm:pt-20 pb-4 sm:pb-6 overflow-x-hidden">{children}</main>
           <footer className="max-w-6xl mx-auto px-3 sm:px-4 pb-6 pt-4 mt-4 border-t border-amber-300 flex justify-center gap-3 text-sm font-display text-amber-700">
             <a href="/tips" className="hover:text-amber-700 transition-colors">Tips</a>

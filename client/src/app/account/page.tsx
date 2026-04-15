@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { theme } from "@/lib/styles";
+import { Coffee, Mail } from "lucide-react";
 
 export default function AccountPage() {
   const { data: session, update } = useSession();
@@ -32,16 +33,6 @@ export default function AccountPage() {
     await fetch("/api/account", { method: "DELETE" });
     signOut({ callbackUrl: "/" });
   };
-
-  const trialEnd = session?.user?.trialEndsAt
-    ? new Date(session.user.trialEndsAt)
-    : null;
-  const status = session?.user?.subscriptionStatus;
-  const statusLabel =
-    status === "active" ? "Lifetime Access" :
-    status === "free" ? "Free Access" :
-    trialEnd ? `Trial ends ${trialEnd.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}` :
-    "Unknown";
 
   return (
     <div className="max-w-md mx-auto">
@@ -73,9 +64,28 @@ export default function AccountPage() {
           {saved && <p className="text-xs font-display text-green-600 mt-1">Saved</p>}
         </div>
 
-        <div>
-          <label className="text-sm font-display text-amber-700 block mb-1">Plan</label>
-          <div className="font-display text-amber-900">{statusLabel}</div>
+      </div>
+
+      <div className={`${theme.card} p-5 mb-4`}>
+        <h2 className="font-display text-amber-900 mb-1">Support Development</h2>
+        <p className="text-sm font-display text-amber-700/60 mb-3">
+          Dinner Table is free to use. If you like it, I could use a cup of joe.
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          <a
+            href="https://buymeacoffee.com/kylelogan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-display text-sm rounded-xl transition-colors border border-amber-200/70"
+          >
+            <Coffee className="size-4" /> Buy me a coffee
+          </a>
+          <a
+            href="mailto:klogan4242@gmail.com?subject=Dinner Table Feedback"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-display text-sm rounded-xl transition-colors border border-amber-200/70"
+          >
+            <Mail className="size-4" /> Send feedback
+          </a>
         </div>
       </div>
 
