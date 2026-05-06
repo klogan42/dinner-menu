@@ -124,14 +124,13 @@ export function PlannerContent() {
 
   const assignRecipe = (dateKey: string, recipeId: string) => {
     const recipe = recipes?.find((r) => r.id === recipeId);
-    if (recipe?.isLeftovers) {
-      setMealHistory.mutate({ date: dateKey, recipeId });
-      setOpenDay(null);
-      setLeftoversPickerDay(dateKey);
-      return;
-    }
     setMealHistory.mutate({ date: dateKey, recipeId });
     setOpenDay(null);
+    if (recipe?.isEatOut) {
+      setRestaurantPickerDay(dateKey);
+    } else if (recipe?.isLeftovers) {
+      setLeftoversPickerDay(dateKey);
+    }
   };
 
   const randomizeWeek = async () => {
@@ -189,7 +188,7 @@ export function PlannerContent() {
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Calendar — left on desktop, below planner on mobile */}
-        <div className="lg:w-[65%] order-2 lg:order-1">
+        <div className="lg:w-[70%] order-2 lg:order-1">
           <Card className={theme.card}>
             <CardContent className="p-3 sm:p-4">
               <MealCalendar />
@@ -198,7 +197,7 @@ export function PlannerContent() {
         </div>
 
         {/* Planner — right on desktop, top on mobile */}
-        <div className="lg:w-[35%] min-w-0 order-1 lg:order-2">
+        <div className="lg:w-[30%] min-w-0 order-1 lg:order-2">
           <div className="flex gap-2 mb-3">
             <Button onClick={randomizeWeek} className={`${theme.buttonPrimary} min-h-[44px]`}>
               <Shuffle className="size-4" /> <span className="hidden sm:inline">Randomize</span>

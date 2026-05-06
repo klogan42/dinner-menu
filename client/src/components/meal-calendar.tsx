@@ -383,14 +383,14 @@ export function MealCalendar() {
 
           {/* DESKTOP: 7-column grid */}
           <div className="hidden sm:block">
-            <div className="grid grid-cols-7 gap-1 mb-1">
+            <div className="grid grid-cols-7 gap-1.5 mb-1">
               {twoWeekDays.slice(0, 7).map((date) => (
                 <div key={date.getDay()} className="text-center text-xs font-display text-amber-600/50 py-1">
                   {DAY_NAMES_SHORT[date.getDay()]}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-1.5">
               {twoWeekDays.map((date) => {
                 const key = toDateKey(date);
                 const isToday = key === todayKey;
@@ -408,7 +408,7 @@ export function MealCalendar() {
                     key={key}
                     onClick={() => setSelectedDate(isSelected ? null : key)}
                     className={`
-                      relative min-h-[5.5rem] p-2 rounded-xl border
+                      relative min-h-[6.5rem] p-2.5 rounded-xl border
                       cursor-pointer transition-colors hover:bg-amber-50/60
                       ${isSelected ? "border-amber-400 bg-amber-100/60 ring-1 ring-amber-400/30" : ""}
                       ${isToday && !isSelected ? "border-amber-400/60 bg-amber-100/40" : ""}
@@ -430,7 +430,7 @@ export function MealCalendar() {
                       )}
                     </div>
                     {recipeName && (
-                      <div className={`mt-1 text-sm leading-snug line-clamp-2 font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
+                      <div className={`mt-1 text-sm leading-snug line-clamp-3 font-display ${isPast && !isToday ? "text-amber-700/50" : "text-amber-900"}`}>
                         {recipeName}
                       </div>
                     )}
@@ -486,7 +486,7 @@ export function MealCalendar() {
                   key={key}
                   onClick={() => setSelectedDate(isSelected ? null : key)}
                   className={`
-                    relative min-h-[3.25rem] sm:min-h-[4rem] p-1.5 rounded-md border
+                    relative min-h-[3.25rem] sm:min-h-[4.5rem] p-1.5 sm:p-2 rounded-md border
                     cursor-pointer transition-colors hover:bg-amber-50/60
                     ${isSelected ? "border-amber-400 bg-amber-100/60 ring-1 ring-amber-400/30" : ""}
                     ${isToday && !isSelected ? "border-amber-400/60 bg-amber-100/40" : ""}
@@ -503,12 +503,12 @@ export function MealCalendar() {
                     </div>
                   )}
                   {recipeId && isEatOutRecipe(recipeId) && (
-                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-800"}`}>
+                    <div className={`text-[9px] sm:text-xs line-clamp-1 mt-0.5 font-display ${restaurantName ? "text-amber-800 font-bold" : "text-amber-800"}`}>
                       {restaurantName ?? "Pick a spot..."}
                     </div>
                   )}
                   {recipeId && isLeftoversRecipe(recipeId) && (
-                    <div className={`text-[9px] sm:text-[10px] line-clamp-1 mt-0.5 font-display ${entry?.leftoversOfId ? "text-amber-800 font-bold" : "text-amber-800"}`}>
+                    <div className={`text-[9px] sm:text-xs line-clamp-1 mt-0.5 font-display ${entry?.leftoversOfId ? "text-amber-800 font-bold" : "text-amber-800"}`}>
                       {entry?.leftoversOfId ? getRecipeById(entry.leftoversOfId)?.title ?? "Leftovers" : "What?"}
                     </div>
                   )}
