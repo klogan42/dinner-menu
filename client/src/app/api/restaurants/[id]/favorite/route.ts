@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Restaurant } from "@/models/Restaurant";
-import { requireUserId } from "@/lib/session";
+import { requireUserId, isValidId } from "@/lib/session";
 
 // PATCH /api/restaurants/[id]/favorite — toggle isFavorite
 export async function PATCH(
@@ -13,6 +13,7 @@ export async function PATCH(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const restaurant = await Restaurant.findOne({ _id: id, userId: auth.userId });
     if (!restaurant) return NextResponse.json({ error: "Not found" }, { status: 404 });
     restaurant.isFavorite = !restaurant.isFavorite;

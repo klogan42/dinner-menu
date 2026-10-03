@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Restaurant } from "@/models/Restaurant";
 import { restaurantSchema } from "@/lib/validations";
-import { requireUserId } from "@/lib/session";
+import { requireUserId, isValidId } from "@/lib/session";
 
 // GET /api/restaurants/[id]
 export async function GET(
@@ -14,6 +14,7 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const restaurant = await Restaurant.findOne({ _id: id, userId: auth.userId });
     if (!restaurant) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(restaurant);
@@ -33,6 +34,7 @@ export async function PUT(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const body = await req.json();
     const parsed = restaurantSchema.safeParse(body);
     if (!parsed.success) {
@@ -61,6 +63,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const deleted = await Restaurant.findOneAndDelete({ _id: id, userId: auth.userId });
     if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return new NextResponse(null, { status: 204 });

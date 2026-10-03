@@ -11,3 +11,7 @@ export async function requireUserId(): Promise<AuthOk | AuthErr> {
   }
   return { userId: session.user.id };
 }
+
+export function isValidId(id: string): boolean {
+  return /^[a-f0-9]{24}$/i.test(id);
+}

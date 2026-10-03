@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Recipe } from "@/models/Recipe";
@@ -11,7 +12,9 @@ export async function GET(req: NextRequest) {
   const apiKey = req.headers.get("x-api-key");
   const secret = process.env.API_SECRET_KEY;
 
-  if (!secret || apiKey !== secret) {
+  const a = Buffer.from(apiKey ?? "");
+  const b = Buffer.from(secret ?? "");
+  if (!secret || a.length !== b.length || !timingSafeEqual(a, b)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

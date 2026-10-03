@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Recipe } from "@/models/Recipe";
 import { recipeSchema } from "@/lib/validations";
-import { requireUserId } from "@/lib/session";
+import { requireUserId, isValidId } from "@/lib/session";
 
 // GET /api/recipes/[id]
 export async function GET(
@@ -14,6 +14,7 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(recipe);
@@ -33,6 +34,7 @@ export async function PUT(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const body = await req.json();
     const parsed = recipeSchema.safeParse(body);
     if (!parsed.success) {
@@ -61,6 +63,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
+    if (!isValidId(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const recipe = await Recipe.findOne({ _id: id, userId: auth.userId });
     if (!recipe) return NextResponse.json({ error: "Not found" }, { status: 404 });
     if (recipe.isEatOut || recipe.isLeftovers) return NextResponse.json({ error: "This system recipe cannot be deleted" }, { status: 400 });

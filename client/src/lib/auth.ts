@@ -68,7 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      // Session refresh (e.g. after Stripe checkout)
+      // Session refresh (client called update())
       if (trigger === "update" && token.id) {
         const db = (await clientPromise).db();
         const dbUser = await db.collection("users").findOne({ _id: new ObjectId(token.id as string) });

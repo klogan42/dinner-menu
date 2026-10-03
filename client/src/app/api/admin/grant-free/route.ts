@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { clientPromise } from "@/lib/mongodb";
+
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ab.length === bb.length && timingSafeEqual(ab, bb);
+}
 
 // POST /api/admin/grant-free — grant free lifetime access by email
 // Protected by API_SECRET_KEY header
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("x-api-key");
-  if (authHeader !== process.env.API_SECRET_KEY) {
+  const secret = process.env.API_SECRET_KEY;
+  if (!secret || !authHeader || !safeEqual(authHeader, secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
